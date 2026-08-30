@@ -67,7 +67,7 @@
     <h1>Weekly roundup — three layouts</h1>
     <p>Your “New hackathons in Europe published this week” post, rebuilt in the Hackathon
     Spotlight visual language (near-black ground, Inter + IBM Plex Mono, blue accent, star field).
-    Same 16 events, 6 countries, 4 regions in each. The logo mark is a placeholder — swap in the
+    Same 21 events, 8 countries, 5 regions in each. The logo mark is a placeholder — swap in the
     real Hackathon Hub asset. Pick a direction and I’ll finalise it.</p>
   </header>
 
@@ -82,7 +82,7 @@
 
   <section class="variant">
     <h2><span>Option A</span> Carousel — one slide per region</h2>
-    <p class="desc">Cover + 4 region slides, each a native 1350×1350 LinkedIn square. Most room for
+    <p class="desc">Cover + 5 region slides, each a native 1350×1350 LinkedIn square. Most room for
     country headers and topic tags; reads well on mobile; best engagement format. Downside: 5 images to
     produce and people must swipe.</p>
     <div class="stage"><div class="slides" id="slidesA"></div></div>
@@ -98,7 +98,7 @@
 
   <section class="variant">
     <h2><span>Option C</span> Single square, condensed</h2>
-    <p class="desc">One 1350×1350 square, closest to the current Spotlights. All 16 events as tight
+    <p class="desc">One 1350×1350 square, closest to the current Spotlights. All 21 events as tight
     rows under flag-marked region headers. Tags trimmed to two per event to fit. Downside: dense, and
     most topic detail is dropped.</p>
     <div class="stage"><div class="slides" id="slidesC"></div></div>
@@ -111,6 +111,9 @@ const REGIONS = [
     {code:"at", name:"Austria", events:[
       {name:"TEB Hackathon: Critical Infrastructure & Energy Security", loc:"Wien", date:"23–25 Oct", tags:["Cybersecurity","Energy Systems","IoT","Industry 4.0"]},
     ]},
+    {code:"de", name:"Germany", events:[
+      {name:"MCP, AI & Workflows: The Softr × Make Hackathon", loc:"Berlin", date:"14 Sep", tags:["AI","Dev Tools","FinTech"]},
+    ]},
     {code:"ch", name:"Switzerland", events:[
       {name:"HPE & NVIDIA Agentic AI Hackathon for Enterprises", loc:"Meyrin", date:"14 Sep", tags:["AI","Dev Tools","HPC"]},
       {name:"AI Hackathon", loc:"Lenzburg", date:"18 Sep", tags:["AI","FinTech"]},
@@ -120,8 +123,15 @@ const REGIONS = [
   ]},
   {name:"Western Europe", codes:["fr","nl","be","ie","gb"], countries:[
     {code:"gb", name:"United Kingdom", events:[
+      {name:"Chess × ML Hackathon: Build, Train, Win.", loc:"London", date:"7–12 Sep", tags:["AI","Gaming"]},
       {name:"London AI×Bio Hack", loc:"London", date:"18–20 Sep", tags:["AI","Life Sciences"]},
       {name:"Customer Onboarding Hackathon", loc:"London", date:"19 Sep", tags:["Dev Tools","AI","HCI / UX","FinTech","Open Source"]},
+      {name:"Tenzo's AI Buildathon!", loc:"London", date:"23 Sep", tags:["AI","Data Science"]},
+    ]},
+  ]},
+  {name:"Northern Europe", codes:["se","no","dk","fi"], countries:[
+    {code:"se", name:"Sweden", events:[
+      {name:"Hackathon: How to Build a Profitable E-Commerce Business with AI", loc:"Kista", date:"17 Sep", tags:["AI","Retail & E-Commerce"]},
     ]},
   ]},
   {name:"Southern Europe", codes:["es","pt","it","gr"], countries:[
@@ -141,16 +151,18 @@ const REGIONS = [
   {name:"Central & Eastern Europe", codes:["pl","cz","hu","ro"], countries:[
     {code:"pl", name:"Poland", events:[
       {name:"Alien Bazaar Hardware Hackathon", loc:"Warsaw", date:"25–27 Sep", tags:["Robotics","IoT","Hardware","Smart Cities"]},
+      {name:"BLOCKCHAIN HACK WARSAW", loc:"Warszawa", date:"26–27 Sep", tags:["Blockchain","Dev Tools"]},
     ]},
   ]},
 ];
 const TOTAL = REGIONS.reduce((n,r)=>n+r.countries.reduce((m,c)=>m+c.events.length,0),0);
 const NCOUNTRIES = REGIONS.reduce((n,r)=>n+r.countries.length,0);
-const WEEK = "WEEK OF 25 AUG 2026";
+const NREGIONS = REGIONS.length;
+const WEEK = "WEEK OF 24 AUG 2026";
 
 const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
 const deco = `<div class="grain"></div><div class="stars"></div>`;
-const FLAGS = {"de": "<rect width=\"3\" height=\"2\" fill=\"#000\"/><rect y=\"0.667\" width=\"3\" height=\"0.667\" fill=\"#D00\"/><rect y=\"1.333\" width=\"3\" height=\"0.667\" fill=\"#FFCE00\"/>", "at": "<rect width=\"3\" height=\"2\" fill=\"#ED2939\"/><rect y=\"0.667\" width=\"3\" height=\"0.666\" fill=\"#fff\"/>", "ch": "<rect width=\"3\" height=\"2\" fill=\"#D52B1E\"/><rect x=\"1.28\" y=\"0.45\" width=\"0.44\" height=\"1.1\" fill=\"#fff\"/><rect x=\"0.95\" y=\"0.78\" width=\"1.1\" height=\"0.44\" fill=\"#fff\"/>", "fr": "<rect width=\"3\" height=\"2\" fill=\"#fff\"/><rect width=\"1\" height=\"2\" fill=\"#0055A4\"/><rect x=\"2\" width=\"1\" height=\"2\" fill=\"#EF4135\"/>", "nl": "<rect width=\"3\" height=\"2\" fill=\"#fff\"/><rect width=\"3\" height=\"0.667\" fill=\"#AE1C28\"/><rect y=\"1.333\" width=\"3\" height=\"0.667\" fill=\"#21468B\"/>", "be": "<rect width=\"1\" height=\"2\" fill=\"#000\"/><rect x=\"1\" width=\"1\" height=\"2\" fill=\"#FDDA24\"/><rect x=\"2\" width=\"1\" height=\"2\" fill=\"#EF3340\"/>", "ie": "<rect width=\"1\" height=\"2\" fill=\"#169B62\"/><rect x=\"1\" width=\"1\" height=\"2\" fill=\"#fff\"/><rect x=\"2\" width=\"1\" height=\"2\" fill=\"#FF883E\"/>", "gb": "<rect width=\"3\" height=\"2\" fill=\"#012169\"/><path d=\"M0,0L3,2M3,0L0,2\" stroke=\"#fff\" stroke-width=\"0.4\"/><path d=\"M0,0L3,2M3,0L0,2\" stroke=\"#C8102E\" stroke-width=\"0.16\"/><rect x=\"1.2\" width=\"0.6\" height=\"2\" fill=\"#fff\"/><rect y=\"0.7\" width=\"3\" height=\"0.6\" fill=\"#fff\"/><rect x=\"1.35\" width=\"0.3\" height=\"2\" fill=\"#C8102E\"/><rect y=\"0.85\" width=\"3\" height=\"0.3\" fill=\"#C8102E\"/>", "es": "<rect width=\"3\" height=\"2\" fill=\"#AA151B\"/><rect y=\"0.5\" width=\"3\" height=\"1\" fill=\"#F1BF00\"/>", "pt": "<rect width=\"3\" height=\"2\" fill=\"#DA291C\"/><rect width=\"1.2\" height=\"2\" fill=\"#046A38\"/><circle cx=\"1.2\" cy=\"1\" r=\"0.3\" fill=\"#FFE900\"/><circle cx=\"1.2\" cy=\"1\" r=\"0.16\" fill=\"#DA291C\"/>", "it": "<rect width=\"3\" height=\"2\" fill=\"#fff\"/><rect width=\"1\" height=\"2\" fill=\"#008C45\"/><rect x=\"2\" width=\"1\" height=\"2\" fill=\"#CD212A\"/>", "gr": "<rect width=\"3\" height=\"2\" fill=\"#0D5EAF\"/><rect y=\"0.222\" width=\"3\" height=\"0.222\" fill=\"#fff\"/><rect y=\"0.667\" width=\"3\" height=\"0.222\" fill=\"#fff\"/><rect y=\"1.111\" width=\"3\" height=\"0.222\" fill=\"#fff\"/><rect y=\"1.556\" width=\"3\" height=\"0.222\" fill=\"#fff\"/><rect width=\"1.111\" height=\"1.111\" fill=\"#0D5EAF\"/><rect x=\"0.444\" width=\"0.222\" height=\"1.111\" fill=\"#fff\"/><rect y=\"0.444\" width=\"1.111\" height=\"0.222\" fill=\"#fff\"/>", "pl": "<rect width=\"3\" height=\"2\" fill=\"#fff\"/><rect y=\"1\" width=\"3\" height=\"1\" fill=\"#DC143C\"/>", "cz": "<rect width=\"3\" height=\"1\" fill=\"#fff\"/><rect y=\"1\" width=\"3\" height=\"1\" fill=\"#D7141A\"/><path d=\"M0,0L1.5,1L0,2Z\" fill=\"#11457E\"/>", "hu": "<rect width=\"3\" height=\"2\" fill=\"#fff\"/><rect width=\"3\" height=\"0.667\" fill=\"#CD2A3E\"/><rect y=\"1.333\" width=\"3\" height=\"0.667\" fill=\"#436F4D\"/>", "ro": "<rect width=\"3\" height=\"2\" fill=\"#FCD116\"/><rect width=\"1\" height=\"2\" fill=\"#002B7F\"/><rect x=\"2\" width=\"1\" height=\"2\" fill=\"#CE1126\"/>"};
+const FLAGS = {"de": "<rect width=\"3\" height=\"2\" fill=\"#000\"/><rect y=\"0.667\" width=\"3\" height=\"0.667\" fill=\"#D00\"/><rect y=\"1.333\" width=\"3\" height=\"0.667\" fill=\"#FFCE00\"/>", "at": "<rect width=\"3\" height=\"2\" fill=\"#ED2939\"/><rect y=\"0.667\" width=\"3\" height=\"0.666\" fill=\"#fff\"/>", "ch": "<rect width=\"3\" height=\"2\" fill=\"#D52B1E\"/><rect x=\"1.28\" y=\"0.45\" width=\"0.44\" height=\"1.1\" fill=\"#fff\"/><rect x=\"0.95\" y=\"0.78\" width=\"1.1\" height=\"0.44\" fill=\"#fff\"/>", "fr": "<rect width=\"3\" height=\"2\" fill=\"#fff\"/><rect width=\"1\" height=\"2\" fill=\"#0055A4\"/><rect x=\"2\" width=\"1\" height=\"2\" fill=\"#EF4135\"/>", "nl": "<rect width=\"3\" height=\"2\" fill=\"#fff\"/><rect width=\"3\" height=\"0.667\" fill=\"#AE1C28\"/><rect y=\"1.333\" width=\"3\" height=\"0.667\" fill=\"#21468B\"/>", "be": "<rect width=\"1\" height=\"2\" fill=\"#000\"/><rect x=\"1\" width=\"1\" height=\"2\" fill=\"#FDDA24\"/><rect x=\"2\" width=\"1\" height=\"2\" fill=\"#EF3340\"/>", "ie": "<rect width=\"1\" height=\"2\" fill=\"#169B62\"/><rect x=\"1\" width=\"1\" height=\"2\" fill=\"#fff\"/><rect x=\"2\" width=\"1\" height=\"2\" fill=\"#FF883E\"/>", "gb": "<rect width=\"3\" height=\"2\" fill=\"#012169\"/><path d=\"M0,0L3,2M3,0L0,2\" stroke=\"#fff\" stroke-width=\"0.4\"/><path d=\"M0,0L3,2M3,0L0,2\" stroke=\"#C8102E\" stroke-width=\"0.16\"/><rect x=\"1.2\" width=\"0.6\" height=\"2\" fill=\"#fff\"/><rect y=\"0.7\" width=\"3\" height=\"0.6\" fill=\"#fff\"/><rect x=\"1.35\" width=\"0.3\" height=\"2\" fill=\"#C8102E\"/><rect y=\"0.85\" width=\"3\" height=\"0.3\" fill=\"#C8102E\"/>", "es": "<rect width=\"3\" height=\"2\" fill=\"#AA151B\"/><rect y=\"0.5\" width=\"3\" height=\"1\" fill=\"#F1BF00\"/>", "pt": "<rect width=\"3\" height=\"2\" fill=\"#DA291C\"/><rect width=\"1.2\" height=\"2\" fill=\"#046A38\"/><circle cx=\"1.2\" cy=\"1\" r=\"0.3\" fill=\"#FFE900\"/><circle cx=\"1.2\" cy=\"1\" r=\"0.16\" fill=\"#DA291C\"/>", "it": "<rect width=\"3\" height=\"2\" fill=\"#fff\"/><rect width=\"1\" height=\"2\" fill=\"#008C45\"/><rect x=\"2\" width=\"1\" height=\"2\" fill=\"#CD212A\"/>", "gr": "<rect width=\"3\" height=\"2\" fill=\"#0D5EAF\"/><rect y=\"0.222\" width=\"3\" height=\"0.222\" fill=\"#fff\"/><rect y=\"0.667\" width=\"3\" height=\"0.222\" fill=\"#fff\"/><rect y=\"1.111\" width=\"3\" height=\"0.222\" fill=\"#fff\"/><rect y=\"1.556\" width=\"3\" height=\"0.222\" fill=\"#fff\"/><rect width=\"1.111\" height=\"1.111\" fill=\"#0D5EAF\"/><rect x=\"0.444\" width=\"0.222\" height=\"1.111\" fill=\"#fff\"/><rect y=\"0.444\" width=\"1.111\" height=\"0.222\" fill=\"#fff\"/>", "pl": "<rect width=\"3\" height=\"2\" fill=\"#fff\"/><rect y=\"1\" width=\"3\" height=\"1\" fill=\"#DC143C\"/>", "cz": "<rect width=\"3\" height=\"1\" fill=\"#fff\"/><rect y=\"1\" width=\"3\" height=\"1\" fill=\"#D7141A\"/><path d=\"M0,0L1.5,1L0,2Z\" fill=\"#11457E\"/>", "hu": "<rect width=\"3\" height=\"2\" fill=\"#fff\"/><rect width=\"3\" height=\"0.667\" fill=\"#CD2A3E\"/><rect y=\"1.333\" width=\"3\" height=\"0.667\" fill=\"#436F4D\"/>", "ro": "<rect width=\"3\" height=\"2\" fill=\"#FCD116\"/><rect width=\"1\" height=\"2\" fill=\"#002B7F\"/><rect x=\"2\" width=\"1\" height=\"2\" fill=\"#CE1126\"/>", "se": "<rect width=\"3\" height=\"2\" fill=\"#005293\"/><rect x=\"0.8\" width=\"0.4\" height=\"2\" fill=\"#FECB00\"/><rect y=\"0.8\" width=\"3\" height=\"0.4\" fill=\"#FECB00\"/>", "no": "<rect width=\"3\" height=\"2\" fill=\"#EF2B2D\"/><rect x=\"0.7\" width=\"0.6\" height=\"2\" fill=\"#fff\"/><rect y=\"0.7\" width=\"3\" height=\"0.6\" fill=\"#fff\"/><rect x=\"0.8\" width=\"0.4\" height=\"2\" fill=\"#002868\"/><rect y=\"0.8\" width=\"3\" height=\"0.4\" fill=\"#002868\"/>", "dk": "<rect width=\"3\" height=\"2\" fill=\"#C8102E\"/><rect x=\"0.8\" width=\"0.4\" height=\"2\" fill=\"#fff\"/><rect y=\"0.8\" width=\"3\" height=\"0.4\" fill=\"#fff\"/>", "fi": "<rect width=\"3\" height=\"2\" fill=\"#fff\"/><rect x=\"0.8\" width=\"0.4\" height=\"2\" fill=\"#003580\"/><rect y=\"0.8\" width=\"3\" height=\"0.4\" fill=\"#003580\"/>"};
 function flag(code,h){const w=(h*1.5).toFixed(1);return `<svg viewBox="0 0 3 2" width="${w}" height="${h}" preserveAspectRatio="none" style="border-radius:2px;box-shadow:0 0 0 1px rgba(255,255,255,.22);display:inline-block;vertical-align:middle">${FLAGS[code]||''}</svg>`;}
 function flagRow(codes,h){return `<span style="display:inline-flex;gap:6px;vertical-align:middle">`+codes.map(c=>flag(c,h)).join('')+`</span>`;}
 
@@ -176,23 +188,45 @@ function slideCover(){
       <div class="foot-mono" style="font-size:22px">PUBLISHED · ${WEEK}</div>
       <div style="font-size:118px;line-height:.98;font-weight:900;letter-spacing:-.03em;margin:18px 0 0">New hackathons<br>in Europe<br><span style="color:#1e96f0">this week</span></div>
       <div style="font-size:30px;font-weight:600;color:#c7cad0;margin-top:34px;max-width:900px;line-height:1.4">
-        ${TOTAL} freshly published hackathons across ${NCOUNTRIES} countries and 4 regions. Swipe through by region →</div>
+        ${TOTAL} freshly published hackathons across ${NCOUNTRIES} countries and ${NREGIONS} regions. Swipe through by region →</div>
     </div>
     <div style="display:flex;gap:34px;flex-wrap:wrap">
-      ${REGIONS.map(r=>`<div><div style="font-size:34px">${flag(r.codes[0],34)}</div>
+      ${REGIONS.map(r=>`<div><div style="font-size:34px">${flagRow(r.countries.filter(c=>c.events.length).map(c=>c.code),30)}</div>
         <div style="font-size:24px;font-weight:700;margin-top:6px">${esc(r.name)}</div>
-        <div class="foot-mono" style="font-size:16px;margin-top:2px">${r.countries.reduce((m,c)=>m+c.events.length,0)} events</div></div>`).join("")}
+        <div class="foot-mono" style="font-size:16px;margin-top:2px">${(x=>x+(x===1?" event":" events"))(r.countries.reduce((m,c)=>m+c.events.length,0))}</div></div>`).join("")}
     </div>
     <div class="foot-mono" style="font-size:16px;margin-top:40px">→ ALL EVENTS + FILTER · LINK IN COMMENTS</div>
   </div></div>`;
 }
-function slideRegion(r, idx){
+/* Keep full-size type (~4 events per slide); split a region onto extra slides
+   when it has more events, rather than shrinking the text. */
+const MAX_EVENTS_PER_SLIDE = 4;
+
+function regionPages(r){
+  const pages = [];
+  let cur = [], count = 0, curCode = null;
+  r.countries.forEach(c=>{
+    c.events.forEach((e, ei)=>{
+      if(count >= MAX_EVENTS_PER_SLIDE){ pages.push(cur); cur = []; count = 0; curCode = null; }
+      if(curCode !== c.code){
+        cur.push({ code:c.code, name:c.name, cont: ei > 0, events:[] });
+        curCode = c.code;
+      }
+      cur[cur.length-1].events.push(e);
+      count++;
+    });
+  });
+  if(cur.length) pages.push(cur);
+  return pages;
+}
+
+function slideRegionPage(r, regionNo, chunk, pageNo, pageCount){
   const n = r.countries.reduce((m,c)=>m+c.events.length,0);
-  const body = r.countries.map(c=>`
+  const body = chunk.map(c=>`
     <div style="margin-top:26px">
       <div style="display:flex;align-items:center;gap:12px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.14)">
         ${flag(c.code,30)}
-        <span style="font-size:26px;font-weight:800;letter-spacing:.01em">${esc(c.name)}</span>
+        <span style="font-size:26px;font-weight:800;letter-spacing:.01em">${esc(c.name)}${c.cont?` <span style="color:#8a8f98;font-weight:600;font-size:20px">cont.</span>`:""}</span>
       </div>
       ${c.events.map(e=>`<div style="padding:18px 0;border-bottom:1px solid rgba(255,255,255,.07)">
         <div class="ev-name" style="font-size:30px">${esc(e.name)}</div>
@@ -200,23 +234,42 @@ function slideRegion(r, idx){
         ${tags(e.tags,17)}
       </div>`).join("")}
     </div>`).join("");
+  const part = pageCount>1 ? ` · ${pageNo}/${pageCount}` : "";
   return `<div class="card" style="height:1350px;padding:88px 92px">${deco}<div class="inner">
     ${brand(`EUROPE · ${WEEK}`)}
     <div style="margin-top:40px">
-      <div class="foot-mono" style="font-size:20px">REGION ${idx} / 4</div>
+      <div class="foot-mono" style="font-size:20px">REGION ${regionNo} / ${NREGIONS}${part}</div>
       <div style="display:flex;align-items:baseline;gap:20px;margin-top:8px">
         <div style="font-size:76px;font-weight:900;letter-spacing:-.03em">${esc(r.name)}</div>
         <div style="font-size:30px;font-weight:800;color:#1e96f0">${n} new</div>
       </div>
       <div class="flags" style="margin-top:12px">${flagRow(r.codes,26)}</div>
     </div>
-    <div style="flex:1;overflow:hidden">${body}</div>
+    <div class="rbody" style="flex:1;overflow:hidden"><div class="rbody-in">${body}</div></div>
     <div class="foot-mono" style="font-size:15px;margin-top:24px">→ ALL EVENTS + FILTER · LINK IN COMMENTS</div>
   </div></div>`;
 }
 document.getElementById("slidesA").innerHTML =
   `<div class="scaler">${slideCover()}</div>` +
-  REGIONS.map((r,i)=>`<div class="scaler">${slideRegion(r,i+1)}</div>`).join("");
+  REGIONS.map((r,i)=>{
+    const pages = regionPages(r);
+    return pages.map((chunk,pi)=>`<div class="scaler">${slideRegionPage(r,i+1,chunk,pi+1,pages.length)}</div>`).join("");
+  }).join("");
+
+/* Safety net: if a page still overruns (unusually long titles/tag rows), nudge it to fit. */
+function fitRegionBodies(){
+  document.querySelectorAll("#slidesA .card .rbody").forEach(box=>{
+    const inner = box.querySelector(".rbody-in");
+    inner.style.zoom = "1";
+    const avail = box.clientHeight, need = inner.scrollHeight;
+    if(need > avail + 1){
+      inner.style.zoom = String(Math.max(0.7, (avail / need) - 0.01));
+    }
+  });
+}
+fitRegionBodies();
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(fitRegionBodies);
+addEventListener("load", fitRegionBodies);
 
 /* ---------- Option B : single tall ---------- */
 function tall(){
@@ -248,7 +301,7 @@ function tall(){
       <div style="font-size:72px;font-weight:900;letter-spacing:-.03em;line-height:1.02;margin-top:10px">
         ${TOTAL} new hackathons in Europe <span style="color:#1e96f0">this week</span></div>
       <div style="font-size:22px;font-weight:600;color:#c7cad0;margin-top:14px">
-        Across ${NCOUNTRIES} countries and 4 regions — grouped below.</div>
+        Across ${NCOUNTRIES} countries and ${NREGIONS} regions — grouped below.</div>
     </div>
     ${REGIONS.map(regionBlock).join("")}
     <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:52px">
