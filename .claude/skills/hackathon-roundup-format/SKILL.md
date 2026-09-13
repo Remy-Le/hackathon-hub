@@ -13,11 +13,14 @@ Trigger when the user pastes a block of text shaped like the weekly "New hackath
 
 ## Output contract
 
-Do not print the cleaned post inline in chat. Write it to a file instead:
+Do not print the cleaned post inline in chat. Write it to three files instead,
+all in the same dated folder:
 
 - **Path**: `hackathon-spotlights/weekly-roundup-<published-since-date>/post.md`, where `<published-since-date>` is the "published since" date from the post itself, formatted `YYYY-MM-DD` (e.g. a post reading "published since 31 Aug" in 2026 → `weekly-roundup-2026-08-31/post.md`). This is the same dated folder used for that week's carousel PNGs (see the repo's `CLAUDE.md` for the full weekly-roundup pipeline) — the text post and the visual carousel for a given week live together in one folder. Create the folder if it doesn't exist yet.
 - **Content**: the cleaned post as plain text (no markdown formatting added — the bold/flags are already Unicode characters in the source, not markdown), preserving the overall structure (regions → countries → events, footer, hashtags).
-- **Reply to the user**: a short confirmation with the file path, not a copy of the full text. If Rule 6 below applies (an outlier duration or prize), add that as a one-line flag in the reply — not inside the file.
+- **Second file — `post-compact.md`** in the same folder: an exact copy of `post.md` except every event's `Location · Date · Tag · Tag · ...` line is trimmed to just `Location · Date`, plus any of these special chips that are present, in their original order: 💰 price, 🏨 Stay, 🖥️ Online, ✈️ Travel. Category tags (e.g. "Artificial Intelligence (AI)", "FinTech") are dropped from this version; everything else — headers, region/country counts, bullets, blank-line spacing, event names, footer, hashtags — stays identical to `post.md`. See Rule 7 below.
+- **Third file — `post-regions.md`** in the same folder: just the region/country structure with hackathon counts, no individual events. See Rule 8 below.
+- **Reply to the user**: a short confirmation with all three file paths, not a copy of the full text. If Rule 6 below applies (an outlier duration or prize), add that as a one-line flag in the reply — not inside any file.
 
 ## Rule 1 — Bullets
 
@@ -87,6 +90,56 @@ Do not change or "fix" the underlying facts. If you notice:
 - a prize amount far outside the rest of the batch (e.g. 10x+ the next-highest prize),
 
 leave the number as given, but add one short line after the cleaned post flagging it for the user to double-check — unless the user has already confirmed that exact figure earlier in the conversation, in which case say nothing.
+
+## Rule 7 — `post-compact.md`: strip category tags, keep special chips
+
+`post-compact.md` is a places-and-dates-only skim version, derived from the
+already-cleaned `post.md` (apply Rules 1-6 first, then derive the compact file
+from the result — don't clean it separately).
+
+On each event's second line, keep only the location, the date, and any of
+these chips that appear, in their original order and exact formatting:
+- 💰 price (per Rule 4)
+- 🏨 Stay
+- 🖥️ Online
+- ✈️ Travel
+
+Drop every category tag (long-form tag text). If an event line has no chips,
+it ends right after the date, e.g. `Bari · 1 Oct`. If it has chips, e.g.
+`Vallendar · 25-26 Sep · 💰 €5,000 · 🏨 Stay`.
+
+Do not touch anything else: event name lines, bullets, headers, region/country
+counts, blank-line spacing, footer, and hashtags are identical between the two
+files.
+
+## Rule 8 — `post-regions.md`: region → country → count, no events
+
+`post-regions.md` is a structural summary, derived from the already-cleaned
+`post.md` (apply Rules 1-6 first, then derive this file from the result).
+
+Keep the header line and every region header exactly as in `post.md` (flag
+emoji, bold region name, bold total count in parens). Under each region,
+replace the country sub-headers + bulleted events with one line per country:
+flag emoji + bold country name + bold hackathon count in parens, e.g.
+`🇦🇹 𝗔𝘂𝘀𝘁𝗿𝗶𝗮 (𝟯)`. No bullets, no event names, dates, tags, or chips.
+
+If a region has no country sub-headers in `post.md` (events listed directly
+under the region), still break its events out by country here — count how
+many events belong to each country and list each as its own line, the same as
+regions that do have sub-headers. Don't skip this step just because the
+source didn't need it.
+
+For a region made up of non-country events (e.g. "Online / Remote"), don't
+add a separate country-style line under it — the region header's own count is
+enough, since there's no real country to name.
+
+One blank line between regions; no blank line between a region header and its
+first country line, or between consecutive country lines. No footer, no
+hashtags — this file is an internal structural view, not something meant to
+be posted as-is.
+
+Every country's count must sum to its region's `(N)`. Cross-check this before
+writing the file.
 
 ## Do not touch
 
