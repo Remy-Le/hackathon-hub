@@ -23,7 +23,7 @@ If the user only wants the raw text tidied and no carousel, use `hackathon-round
 
 ## Stage 1 - Text post
 
-Invoke the `hackathon-roundup-format` skill on the raw text. It writes `hackathon-spotlights/weekly-roundup-<published-since-date>/post.md` and derives `<published-since-date>` (e.g. "published since 31 Aug" in 2026 -> `2026-08-31`). That date is the dated-folder key for the whole week; reuse it in Stage 3.
+Invoke the `hackathon-roundup-format` skill on the raw text. It writes `hackathon-spotlights/weekly-roundup-<published-since-date>/post.md` plus a places-and-dates-only `post-compact.md` and a region/country-counts-only `post-regions.md`, all in the same folder, and derives `<published-since-date>` (e.g. "published since 31 Aug" in 2026 -> `2026-08-31`). That date is the dated-folder key for the whole week; reuse it in Stage 3.
 
 ## Stage 2 - Carousel build
 
@@ -67,8 +67,14 @@ The text post keeps long-form tags; the carousel uses short forms to fit the car
 | Mobility & Transportation | Mobility |
 | Digital Identity & Privacy | Digital Identity |
 | Gaming & Game Development | Gaming |
+| Life Sciences & Biotechnology | Life Sciences |
+| Hardware & Embedded Systems | Hardware |
+| HCI / UX Innovation | HCI |
+| Supply Chain & Logistics | Supply Chain |
+| LegalTech / Legal AI | LegalTech |
+| Women in Tech / Diversity | Women in Tech |
 
-Pass through unchanged (long form == short form): FinTech, Blockchain, Web3, Open Source, Social Impact, Sustainability, Smart Cities, Energy Systems, Cybersecurity, HRTech, ClimateTech, Bioinformatics, Digital Humanities, Reproducible Research.
+Pass through unchanged (long form == short form): FinTech, Blockchain, Web3, Open Source, Social Impact, Sustainability, Smart Cities, Energy Systems, Cybersecurity, HRTech, ClimateTech, Bioinformatics, Digital Humanities, Reproducible Research, PropTech, Quantum Computing.
 
 Add new rows here when a new tag appears.
 
@@ -160,7 +166,7 @@ If the user already confirmed one of these figures earlier in the conversation, 
 
 ## Output contract
 
-- `post.md` written by `hackathon-roundup-format`.
+- `post.md`, `post-compact.md`, and `post-regions.md` written by `hackathon-roundup-format`.
 - `build-new-roundup.js` and `render-pngs.js` edited in place.
 - `weekly-roundup-new.html` regenerated.
 - One new artifact URL for the week, handed to the user.
