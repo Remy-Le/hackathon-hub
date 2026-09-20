@@ -13,6 +13,8 @@ Orchestrates the weekly roundup. It calls two other skills as sub-steps (`hackat
 
 `hackathon-spotlights/build-new-roundup.js` is a small Node file that holds one week's event data (the `REGIONS` array and a `WEEK` label). Running `node build-new-roundup.js` reads the shared card design out of `weekly-roundup-layouts.html`, plugs the event data into it, and writes `weekly-roundup-new.html`: the finished carousel (cover slide + one slide per region) that gets published as the review artifact and later screenshotted to PNGs by `render-pngs.js`.
 
+The cover slide's headline is the week's event count (`TOTAL`, auto-computed from `REGIONS`), not a generic title: `"${TOTAL} new hackathons in Europe this week"`, with `${TOTAL}` and `"this week"` both in the accent blue (`#1e96f0`). This lives in `slideCover()` in both `weekly-roundup-layouts.html` (source of truth for the card design) and `build-new-roundup.js` (its own escaped copy) — keep the two in sync if either changes. No manual edit needed per week: `TOTAL` is derived from `REGIONS`, so it updates automatically.
+
 ## When to use
 
 The user pastes a block shaped like the weekly roundup (bold-unicode region headers with flag emoji and a count like `🇩🇪🇦🇹🇨🇭 𝗗𝗔𝗖𝗛 (𝟭𝟲)`, flag-emoji country sub-headers, bulleted events) and wants the carousel built or refreshed for that week.
@@ -73,8 +75,10 @@ The text post keeps long-form tags; the carousel uses short forms to fit the car
 | Supply Chain & Logistics | Supply Chain |
 | LegalTech / Legal AI | LegalTech |
 | Women in Tech / Diversity | Women in Tech |
+| Retail & E-Commerce | Retail |
+| EdTech / Education Technology | EdTech |
 
-Pass through unchanged (long form == short form): FinTech, Blockchain, Web3, Open Source, Social Impact, Sustainability, Smart Cities, Energy Systems, Cybersecurity, HRTech, ClimateTech, Bioinformatics, Digital Humanities, Reproducible Research, PropTech, Quantum Computing.
+Pass through unchanged (long form == short form): FinTech, Blockchain, Web3, Open Source, Social Impact, Sustainability, Smart Cities, Energy Systems, Cybersecurity, HRTech, ClimateTech, CleanTech, Bioinformatics, Digital Humanities, Reproducible Research, PropTech, Quantum Computing.
 
 Add new rows here when a new tag appears.
 
@@ -88,7 +92,7 @@ Plain hyphen, not en-dash, in `date:` values too (`"26-27 Sep"`, not `"26–27 S
 
 ### Price
 
-Carry the exact string the formatted `post.md` uses (`hackathon-roundup-format` Rule 4 form): `"£1,000"`, `"€6,000"`, `"$250,000"`, `"CHF 2,000"`, `"NOK 20,000"`. Inside the JS template literal a `$` must be written `\$` (`price:"\$250,000"`). A bare number with no symbol or code (`price:"1,000"`) is a gap: keep it but flag it in Stage 4.
+Carry the exact string the formatted `post.md` uses (`hackathon-roundup-format` Rule 4 form): `"£1,000"`, `"€6,000"`, `"US$250,000"`, `"CHF 2,000"`, `"NOK 20,000"`. US dollar amounts keep the `US` prefix on the glyph (`US$250,000`, not a bare `$250,000`) since a lone `$` is ambiguous on a Europe-focused graphic. Inside the JS template literal a `$` must be written `\$` (`price:"US\$250,000"`). A bare number with no symbol or code (`price:"1,000"`) is a gap: keep it but flag it in Stage 4.
 
 ### Perks
 
@@ -100,14 +104,15 @@ Fixed set of groups: DACH, Western Europe, Northern Europe, Southern Europe, Cen
 
 ### Flags
 
-Every country `code` needs a `FLAGS` entry. The base set (about 20 European countries) comes from `weekly-roundup-layouts.html`. Anything missing needs a hand-added line in `build-new-roundup.js` right after the `${flagsLine}` injection. Two ways:
+Every country `code` needs a `FLAGS` entry. All flags — the base set in `weekly-roundup-layouts.html` and every hand-added one in `build-new-roundup.js` — are real flag artwork from the [hampusborgos/country-flags](https://github.com/hampusborgos/country-flags) repo (MIT-licensed SVGs), never hand-drawn approximations. Earlier weeks used hand-coded SVG shapes (plain bands, a cross) for "simple" flags and only reached for a real image on flags with a coat of arms or emblem; that split was dropped after it turned out several "simple" flags (Portugal, Spain, Slovakia) actually carry a coat of arms that a few `<rect>`s can't represent, so it's real artwork for all of them now, no exceptions.
 
-- **Simple flags** (bands, a cross): inline SVG shapes, e.g. `FLAGS.xx = '<rect width="3" height="2" fill="..."/>...';`
-- **Detailed flags** (a sun with rays, a crescent and star, a coat of arms): a trimmed raster embedded as a data URI, which matches the real flag exactly:
-  `FLAGS.xx = '<image x="0" y="0" width="3" height="2" preserveAspectRatio="none" href="data:image/png;base64,..."/>';`
-  Save the source PNG to `hackathon-spotlights/flags/<code>.png`, trim any transparent border to the flag's bounding box (a short Chromium/canvas script, since there is no image lib installed), base64 it, and inject. `FLAGS.mk` (North Macedonia) and `FLAGS.tr` (Türkiye) are done this way; use them as the pattern.
+To add a country not yet covered:
+1. Download the source file: `https://raw.githubusercontent.com/hampusborgos/country-flags/main/svg/<code>.svg` — save it to `hackathon-spotlights/flags/<code>.svg` (source-of-truth copy, kept in the repo for reuse).
+2. Base64-encode it and embed as a data URI:
+   `FLAGS.xx = '<image x="0" y="0" width="3" height="2" preserveAspectRatio="none" href="data:image/svg+xml;base64,..."/>';`
+3. Add it to the single-line `const FLAGS = {...}` object literal in `weekly-roundup-layouts.html` (the base set) if it's a common European country likely to recur; otherwise append a one-off `FLAGS.xx = '...'` assignment in `build-new-roundup.js` right after the `${flagsLine}` injection, same as `FLAGS.online` (the one non-country pictogram, which stays hand-drawn since it isn't a real flag).
 
-Flag `<image>` data URIs add ~30-40KB each to `weekly-roundup-new.html`; that is fine. Note in the Stage 4 report which flags are hand-added and whether each is an exact raster or an approximate SVG.
+Never hand-code flag geometry (bands, crosses, emblems) from memory — always fetch the real SVG. Flag `<image>` data URIs add a few KB to tens of KB each to `weekly-roundup-new.html` depending on the flag's complexity (Spain and Portugal's coats of arms are the largest); that's fine.
 
 ### render-pngs.js names array
 
@@ -155,10 +160,9 @@ Run the `no-ai-slop` skill against these strings only: the cover subline, the co
 - An end date earlier than the start date.
 - A prize about 10x or more the rest of the batch.
 - A price with no currency symbol or code (bare number).
-- "US$" in the raw text rendered as a bare "$" in the carousel (ambiguous on a Europe graphic).
 - A perk in the raw text missing from the carousel.
 - An event title shortened or abbreviated versus the raw source.
-- A hand-added (approximate) flag.
+- A flag newly added this week (real artwork, but worth a quick visual glance since it wasn't in the base set before).
 - A one-country region group.
 - A country placed in a region a reader would not expect.
 

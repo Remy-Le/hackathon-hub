@@ -17,10 +17,11 @@ Do not print the cleaned post inline in chat. Write it to three files instead,
 all in the same dated folder:
 
 - **Path**: `hackathon-spotlights/weekly-roundup-<published-since-date>/post.md`, where `<published-since-date>` is the "published since" date from the post itself, formatted `YYYY-MM-DD` (e.g. a post reading "published since 31 Aug" in 2026 → `weekly-roundup-2026-08-31/post.md`). This is the same dated folder used for that week's carousel PNGs (see the repo's `CLAUDE.md` for the full weekly-roundup pipeline) — the text post and the visual carousel for a given week live together in one folder. Create the folder if it doesn't exist yet.
-- **Content**: the cleaned post as plain text (no markdown formatting added — the bold/flags are already Unicode characters in the source, not markdown), preserving the overall structure (regions → countries → events, footer, hashtags).
-- **Second file — `post-compact.md`** in the same folder: an exact copy of `post.md` except every event's `Location · Date · Tag · Tag · ...` line is trimmed to just `Location · Date`, plus any of these special chips that are present, in their original order: 💰 price, 🏨 Stay, 🖥️ Online, ✈️ Travel. Category tags (e.g. "Artificial Intelligence (AI)", "FinTech") are dropped from this version; everything else — headers, region/country counts, bullets, blank-line spacing, event names, footer, hashtags — stays identical to `post.md`. See Rule 7 below.
+- **Content**: the cleaned post as plain text (no markdown formatting added — the bold/flags are already Unicode characters in the source, not markdown), preserving the overall structure (regions → countries → events, footer, hashtags). The title line leads with the week's total hackathon count — see Rule 10.
+- **Second file — `post-compact.md`** in the same folder: an exact copy of `post.md` except every event's `Location · Date · Tag · Tag · ...` line is trimmed to just `Location · Date`, plus any of these special chips that are present, in their original order: 💰 price, 🏨 Stay, 🖥️ Online, ✈️ Travel. Category tags (e.g. "Artificial Intelligence (AI)", "FinTech") are dropped from this version; headers, region/country counts, bullets, blank-line spacing, footer, and hashtags stay identical to `post.md`, but event name lines are de-bolded to plain text (region and country names stay bold). See Rule 7 below.
 - **Third file — `post-regions.md`** in the same folder: just the region/country structure with hackathon counts, no individual events. See Rule 8 below.
-- **Reply to the user**: a short confirmation with all three file paths, not a copy of the full text. If Rule 6 below applies (an outlier duration or prize), add that as a one-line flag in the reply — not inside any file.
+- **Conditional extra file — `post-compact-single.md`** in the same folder, only when `post-compact.md` exceeds LinkedIn's 3,000-character limit: a single always-postable version that shows as many full events as fit (in original order) plus a "+N more" line. See Rule 9 below.
+- **Reply to the user**: a short confirmation with all file paths written, not a copy of the full text. If Rule 6 below applies (an outlier duration or prize), add that as a one-line flag in the reply — not inside any file. If Rule 9 applies, say how many of the week's events made it into `post-compact-single.md` and its character count.
 
 ## Rule 1 — Bullets
 
@@ -73,7 +74,7 @@ Write a date range with a plain hyphen (`26-27 Sep`), not a typographic en-dash 
 
 ## Rule 4 — Price/currency formatting
 
-- Currencies with one common single-glyph symbol get that symbol immediately before the number, with no letter-code prefix: `£1,000`, `€6,000`, `$250,000` — not `US$250,000` or `USD 250,000`.
+- Currencies with one common single-glyph symbol get that symbol immediately before the number, with no letter-code prefix: `£1,000`, `€6,000` — except the US dollar, which keeps the `US` prefix on the glyph (`US$250,000`, not `$250,000` or `USD 250,000`), since a bare `$` on a Europe-focused post is ambiguous (could read as any dollar currency, or even loosely as euros). If the source already writes `US$...`, keep it that way; if the source writes a bare `$` for a dollar amount, add the `US` prefix.
 - Currencies without a common single symbol keep a code + space prefix: `NOK 20,000`, `SEK 15,000`, `DKK 10,000`.
 - Keep the 💰 emoji exactly where the source has it, immediately before the price.
 
@@ -108,9 +109,21 @@ Drop every category tag (long-form tag text). If an event line has no chips,
 it ends right after the date, e.g. `Bari · 1 Oct`. If it has chips, e.g.
 `Vallendar · 25-26 Sep · 💰 €5,000 · 🏨 Stay`.
 
-Do not touch anything else: event name lines, bullets, headers, region/country
-counts, blank-line spacing, footer, and hashtags are identical between the two
-files.
+One more difference from `post.md`: event name lines (the `•` line) are
+converted from the Mathematical Sans-Serif Bold Unicode styling to plain
+ASCII text — `• Legal Hackathon`, not `• 𝗟𝗲𝗴𝗮𝗹 𝗛𝗮𝗰𝗸𝗮𝘁𝗵𝗼𝗻`. Region headers
+(`🇩🇪🇦🇹🇨🇭 𝗗𝗔𝗖𝗛 (𝟭𝟴)`) and country headers (`🇦🇹 𝗔𝘂𝘀𝘁𝗿𝗶𝗮`) keep their bold
+styling — only the event name itself drops it, since at skim-list density the
+bold weight on every single title added visual noise without adding
+information the region/country level doesn't already carry. Converting is a
+straight per-character mapping back from the bold-letter/bold-digit Unicode
+ranges (capitals U+1D5D4-U+1D5ED, lowercase U+1D5EE-U+1D607, digits
+U+1D7EC-U+1D7F5) to plain ASCII — everything else in the name (flags,
+punctuation, symbols like `×` or `@`) is already plain and passes through
+unchanged.
+
+Do not touch anything else: bullets, headers, region/country counts,
+blank-line spacing, footer, and hashtags are identical between the two files.
 
 ## Rule 8 — `post-regions.md`: region → country → count, no events
 
@@ -141,11 +154,43 @@ be posted as-is.
 Every country's count must sum to its region's `(N)`. Cross-check this before
 writing the file.
 
+## Rule 9 — LinkedIn's 3,000-character limit: `post-compact-single.md` always fits in one post
+
+LinkedIn's post limit is 3,000 characters, counted as UTF-16 code units (like JavaScript's `.length`) — every bold-unicode character (used throughout this post format: headers, region/country names, event names) costs 2 units instead of 1, same for flag emoji. Don't count with a plain `wc -m`/byte or codepoint count — it under-reports badly. Measure the real length with `[...text].length` for codepoints as a sanity check, but treat `text.length` (UTF-16 units) as the number that matters, since it's the stricter and more likely one LinkedIn's own counter uses.
+
+Stripping the bold styling does **not** reliably fix this — for a heavy week (40+ events) even a plain-text version can still exceed 3,000 codepoints. The actual driver is event count, which varies week to week. **This has to be exactly one LinkedIn post, always** — never split across multiple posts. So when the full list doesn't fit, cut content, not posts.
+
+After writing `post-compact.md`, measure its length (UTF-16 units). If it's ≤ 2,900 (a safety margin under the 3,000 cap), `post-compact.md` is postable as-is and no further file is needed.
+
+If it's over 2,900, write one more file, **`post-compact-single.md`**, in the same dated folder — the actual thing that gets posted to LinkedIn that week:
+
+- Walk events in their existing region → country order (same order as `post-compact.md`) and keep adding full event blocks (name + location/date/chips, exactly as in `post-compact.md`, including the blank-line spacing rules) for as long as the running total stays under the 2,900-unit budget, reserving room for the cutoff line and footer as you go.
+- Stop as soon as the next event wouldn't fit. Region and country headers are only included if at least one of their events made it in; a region or country header's own count (e.g. `(𝟭𝟲)`) is **not** adjusted down to match a partial list under it — leave it as the true weekly total, per Rule 8's counts, even if the post itself only shows some of that region's events. This is a known, accepted tradeoff: which events make the cut is not editorially curated, it is simply "however many fit in original order."
+- After the last included event, add one line: `+<N> more hackathons in the carousel.` (bold the `+<N> more hackathons` portion only, Mathematical Sans-Serif Bold matching the rest of the post; ` in the carousel.` stays plain), where `<N>` is the exact count of events left out. This points the reader to the companion carousel (which covers every event, not just the ones that fit here) rather than duplicating the footer's own link-out — the real footer line right after it already handles "link in the first comment."
+- Then the real footer (`All events + filter: link in the first comment 👇`) and hashtags, unchanged.
+- Verify the final UTF-16 length is ≤ 3,000 before finishing — don't assume the budget math worked, measure the actual output.
+- `post-compact.md` itself still gets written in full regardless (it's the reference/skim file for the whole week) — `post-compact-single.md` is only produced when needed, as the version that actually gets posted.
+- Mention in your reply to the user how many of the week's events made it into `post-compact-single.md` (e.g. "26 of 48") and its final character count.
+
+## Rule 10 — Title line: lead with the total hackathon count
+
+The shared title line at the top of every file (`post.md`, `post-compact.md`, `post-compact-single.md`, and `post-regions.md`) leads with the week's total event count instead of the generic word "New":
+
+`𝟰𝟴 𝗻𝗲𝘄 𝗵𝗮𝗰𝗸𝗮𝘁𝗵𝗼𝗻𝘀 𝗶𝗻 𝗘𝘂𝗿𝗼𝗽𝗲 · 𝗽𝘂𝗯𝗹𝗶𝘀𝗵𝗲𝗱 𝘀𝗶𝗻𝗰𝗲 𝟭𝟰 𝗦𝗲𝗽 𝟮𝟬𝟮𝟲, 𝟬𝟬:𝟬𝟬`
+
+not
+
+`𝗡𝗲𝘄 𝗵𝗮𝗰𝗸𝗮𝘁𝗵𝗼𝗻𝘀 𝗶𝗻 𝗘𝘂𝗿𝗼𝗽𝗲 · 𝗽𝘂𝗯𝗹𝗶𝘀𝗵𝗲𝗱 𝘀𝗶𝗻𝗰𝗲 𝟭𝟰 𝗦𝗲𝗽 𝟮𝟬𝟮𝟲, 𝟬𝟬:𝟬𝟬`
+
+The count is the same `TOTAL` used in Rule 8 (sum of every region's event count), rendered in the same bold Mathematical Sans-Serif digit style as the rest of the title. The whole title line stays entirely bold (this rule only changes "New" → "<count> new", it doesn't touch the bold styling of the title itself, unlike Rule 7 which de-bolds event names specifically). This mirrors the same "lead with the count" treatment already used on the companion carousel's cover slide, for consistency between the two deliverables.
+
 ## Do not touch
 
-Preserve verbatim:
+Preserve verbatim, in `post.md` specifically (the primary output, cleaned but otherwise faithful to the source):
 - The bold Unicode "sans-serif bold" styling of headers, region names, country names, and event titles.
 - All flag emoji, exactly as given, for both regions (multi-flag headers) and individual countries.
 - The region header format and structure: `🇩🇪🇦🇹🇨🇭 𝗗𝗔𝗖𝗛 (𝟳)`.
 - The footer line ("All events + filter: link in the first comment 👇") and the hashtags line.
 - The actual event names, dates, and locations beyond the city-name normalization in Rule 3 — never rewrite or abbreviate an event's title.
+
+The derived files (`post-compact.md`, `post-compact-single.md`, `post-regions.md`) are explicitly *not* bound by the bold-styling protection above — Rule 7 deliberately de-bolds event names in those files, and Rule 10 deliberately changes the title line's wording in all four files. What stays protected everywhere, including the derived files: the actual event names/dates/locations as facts, the flag emoji, and the footer/hashtags content.
