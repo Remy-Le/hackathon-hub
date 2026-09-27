@@ -1,24 +1,158 @@
 const fs = require('fs');
 const path = require('path');
 
-const src = fs.readFileSync(path.join(__dirname, 'weekly-roundup-layouts.html'), 'utf-8');
-const lines = src.split('\n');
+function parseArgs(argv) {
+  const out = {};
+  for (const a of argv) {
+    const m = a.match(/^--([^=]+)=(.*)$/);
+    if (m) out[m[1]] = m[2];
+  }
+  return out;
+}
 
-// Extract the card CSS block (lines index 43..62 in 0-based, i.e. ".card{...}" through ".foot-mono{...}")
-const cssStart = lines.findIndex(l => l.includes('/* ---- shared card'));
-const cssEnd = lines.findIndex(l => l.includes('.foot-mono{'));
-const cardCss = lines.slice(cssStart, cssEnd + 1).join('\n');
+function regionLabel(regions) {
+  return regions.length === 1 ? regions[0].name : 'Europe';
+}
 
-// Extract logo line (the brand() function line with <img class="logo" ...)
-const logoLineIdx = lines.findIndex(l => l.includes('<img class="logo"'));
-const logoLine = lines[logoLineIdx];
+// True for a region made up of one pseudo-"country" that isn't a real place
+// (currently just the Online/Remote block, code "online" -- see FLAGS.online,
+// the one hand-drawn non-flag pictogram). The cover slide phrases its
+// headline/subline differently for this case: no "N countries" claim, since
+// there are none.
+function isNonCountryRegion(regions) {
+  return regions.length === 1 && regions[0].countries.length === 1 && regions[0].countries[0].code === 'online';
+}
 
-// Extract FLAGS object line
-const flagsLineIdx = lines.findIndex(l => l.startsWith('const FLAGS ='));
-const flagsLine = lines[flagsLineIdx];
+// A themed multi-region post (e.g. "NASA Space Apps Challenge", "Hacktoberfest
+// Hack Day") replaces the generic "hackathons" word in the cover headline with
+// "<theme> events", matching the wording pattern the text-post skills' title
+// line already uses for the same case.
+function headlineWords(theme) {
+  return theme ? `${theme} events` : 'hackathons';
+}
 
-const out = `<title>New Hackathons in Europe — Weekly Roundup</title>
-<meta name="description" content="Carousel graphic: new hackathons published in Europe since 14 Sep, in the Hackathon Spotlight visual language.">
+const escNode = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+
+// data.js holds long-form tags verbatim from the raw source (the shared
+// representation the text-post skills also consume); the carousel is the
+// only consumer that needs the short form, so the mapping is applied here at
+// render time rather than baked into data.js. Add a row when a new tag
+// appears in a raw paste with no entry here yet.
+const LONG_TO_SHORT_TAGS = {
+  'Artificial Intelligence (AI)': 'AI',
+  'Developer Tools / DX': 'Dev Tools',
+  'Internet of Things (IoT)': 'IoT',
+  'Data Science & Analytics': 'Data Science',
+  'Robotics & Autonomous Systems': 'Robotics',
+  'HealthTech / Digital Health': 'HealthTech',
+  'Industry 4.0 / Smart Manufacturing': 'Industry 4.0',
+  'API & Platform Engineering': 'API & Platform Eng',
+  'DevOps & Cloud Computing': 'DevOps & Cloud',
+  'SpaceTech / Aerospace': 'SpaceTech',
+  'NeuroTech / Neuroinformatics': 'NeuroTech',
+  'Accessibility & Assistive Tech': 'Accessibility',
+  'GovTech / Public Sector': 'GovTech',
+  'MarTech / AdTech': 'MarTech',
+  'Mobility & Transportation': 'Mobility',
+  'Digital Identity & Privacy': 'Digital Identity',
+  'Gaming & Game Development': 'Gaming',
+  'Life Sciences & Biotechnology': 'Life Sciences',
+  'Hardware & Embedded Systems': 'Hardware',
+  'HCI / UX Innovation': 'HCI',
+  'Supply Chain & Logistics': 'Supply Chain',
+  'LegalTech / Legal AI': 'LegalTech',
+  'Women in Tech / Diversity': 'Women in Tech',
+  'Retail & E-Commerce': 'Retail',
+  'EdTech / Education Technology': 'EdTech',
+};
+
+function shortTag(tag) {
+  return LONG_TO_SHORT_TAGS[tag] || tag;
+}
+
+function bareLen(s) {
+  return s.replace(/[^A-Za-z]/g, '').length;
+}
+
+// Heuristic bucket, not a pixel-perfect fit -- glance at the published
+// artifact to confirm the headline still fits on one/two lines as intended.
+function headlineFontSize(label) {
+  const n = bareLen(label);
+  if (n <= 6) return 112;
+  if (n <= 12) return 104;
+  if (n <= 20) return 100;
+  return 92;
+}
+function headlineLabelHtml(label) {
+  if (bareLen(label) <= 12) return escNode(label);
+  const idx = label.lastIndexOf(' ');
+  if (idx === -1) return escNode(label);
+  return `${escNode(label.slice(0, idx))}<br>${escNode(label.slice(idx + 1))}`;
+}
+function joinWithAnd(list) {
+  if (list.length === 0) return '';
+  if (list.length === 1) return list[0];
+  if (list.length === 2) return `${list[0]} and ${list[1]}`;
+  return `${list.slice(0, -1).join(', ')}, and ${list[list.length - 1]}`;
+}
+function sinceDateFromWeek(week) {
+  const m = week.match(/SINCE\s+(\d{1,2})\s+([A-Za-z]+)/i);
+  if (!m) return week;
+  const month = m[2][0].toUpperCase() + m[2].slice(1, 3).toLowerCase();
+  return `${m[1]} ${month}`;
+}
+function buildExtraFlagsScript(extraFlags, baseDir) {
+  return Object.entries(extraFlags).map(([code, svgPath]) => {
+    const resolved = path.isAbsolute(svgPath) ? svgPath : path.join(baseDir, svgPath);
+    const svg = fs.readFileSync(resolved, 'utf-8');
+    const b64 = Buffer.from(svg, 'utf-8').toString('base64');
+    return `FLAGS.${code} = '<image x="0" y="0" width="3" height="2" preserveAspectRatio="none" href="data:image/svg+xml;base64,${b64}"/>';`;
+  }).join('\n');
+}
+
+function extractLayoutParts(src) {
+  const lines = src.split('\n');
+
+  // Extract the card CSS block (".card{...}" through ".foot-mono{...}")
+  const cssStart = lines.findIndex(l => l.includes('/* ---- shared card'));
+  const cssEnd = lines.findIndex(l => l.includes('.foot-mono{'));
+  const cardCss = lines.slice(cssStart, cssEnd + 1).join('\n');
+
+  // Extract logo line (the brand() function line with <img class="logo" ...)
+  const logoLineIdx = lines.findIndex(l => l.includes('<img class="logo"'));
+  const logoLine = lines[logoLineIdx];
+
+  // Extract FLAGS object line
+  const flagsLineIdx = lines.findIndex(l => l.startsWith('const FLAGS ='));
+  const flagsLine = lines[flagsLineIdx];
+
+  return { cardCss, logoLine, flagsLine };
+}
+
+function buildRoundupHtml({ regions, week, theme = null, extraFlags = {}, layoutsHtml, baseDir }) {
+  const REGIONS = regions;
+  const WEEK = week;
+  const LABEL = regionLabel(REGIONS);
+
+  const SINCE_DATE = sinceDateFromWeek(WEEK);
+  const COUNTRY_LIST = joinWithAnd(REGIONS.flatMap(r => r.countries.map(c => c.name)));
+  const NON_COUNTRY = isNonCountryRegion(REGIONS);
+  const NON_COUNTRY_WORD = NON_COUNTRY ? REGIONS[0].countries[0].name : '';
+  const DISPLAY_LABEL = NON_COUNTRY ? NON_COUNTRY_WORD : LABEL;
+  const HEADLINE_SIZE = headlineFontSize(NON_COUNTRY ? NON_COUNTRY_WORD : (theme || DISPLAY_LABEL));
+  const HEADLINE_LABEL_HTML = headlineLabelHtml(LABEL);
+  const HEADLINE_HTML = NON_COUNTRY
+    ? `<span style="color:#1e96f0">\${TOTAL}</span> new ${escNode(NON_COUNTRY_WORD)} hackathons<br><span style="color:#1e96f0">this week</span>`
+    : `<span style="color:#1e96f0">\${TOTAL}</span> new ${escNode(headlineWords(theme))}<br>in ${HEADLINE_LABEL_HTML} <span style="color:#1e96f0">this week</span>`;
+  const SUBLINE_HTML = NON_COUNTRY
+    ? `Swipe through the cards →`
+    : `Across \${NCOUNTRIES} countries in ${escNode(LABEL)}. Swipe through the cards →`;
+
+  const extraFlagsScript = buildExtraFlagsScript(extraFlags, baseDir);
+  const { cardCss, logoLine, flagsLine } = extractLayoutParts(layoutsHtml);
+
+  const out = `<title>New Hackathons in ${DISPLAY_LABEL} — Weekly Roundup</title>
+<meta name="description" content="Carousel graphic: new hackathons published in ${DISPLAY_LABEL} since ${SINCE_DATE}, in the Hackathon Spotlight visual language.">
 <style>
   :root{
     --page-bg:#f3f4f7; --page-panel:#ffffff; --ink:#1b1d21; --ink-soft:#565a63;
@@ -64,9 +198,9 @@ const out = `<title>New Hackathons in Europe — Weekly Roundup</title>
 
 <div class="wrap">
   <header class="intro">
-    <h1>New hackathons in Europe — weekly roundup</h1>
+    <h1>New hackathons in ${DISPLAY_LABEL} — weekly roundup</h1>
     <p>Cover + region slides in the Hackathon Spotlight visual language (Option A carousel), covering
-    hackathons published since 14 Sep across DACH, Western, Northern, Southern, and Central &amp; Eastern Europe, plus online/remote events.</p>
+    hackathons published since ${SINCE_DATE} across ${COUNTRY_LIST}.</p>
   </header>
 
   <div class="controls">
@@ -86,115 +220,24 @@ const out = `<title>New Hackathons in Europe — Weekly Roundup</title>
 </div>
 
 <script>
-const REGIONS = [
-  {name:"DACH", codes:["at","de","ch"], countries:[
-    {code:"at", name:"Austria", events:[
-      {name:"KIDU × FAFGA | AI Buildathon", loc:"Innsbruck", date:"20 Sep", price:"€1,000", tags:["AI","FinTech","Retail","Social Impact"]},
-      {name:"Clinical AI Hackathon Vienna 2026", loc:"Vienna", date:"29-30 Oct", tags:["AI","HealthTech","Data Science","Social Impact"]},
-      {name:"Hackathon 2026 of the Tourism Technology Festival", loc:"Salzburg", date:"7-8 Nov", tags:["Sustainability"]},
-    ]},
-    {code:"de", name:"Germany", events:[
-      {name:"Mini GTM Hackathon", loc:"Berlin", date:"15 Sep", tags:["AI","Dev Tools","Data Science","FinTech"]},
-      {name:"#NeoIndustrial Company Foundry Hackathon", loc:"Berlin", date:"17-18 Sep", tags:["Industry 4.0","FinTech","Sustainability"]},
-      {name:"Cursor Hackathon Berlin @taxfix", loc:"Berlin", date:"17 Sep", price:"€4,000", tags:["AI","Dev Tools"]},
-      {name:"Monad Blitz Berlin", loc:"Berlin", date:"26 Sep", price:"US\\$3,000", tags:["AI","Blockchain","Web3"]},
-      {name:"EIT Water Hackathon Munich 2026", loc:"Munich", date:"28 Sep", tags:["Sustainability","Energy Systems","CleanTech","Smart Cities","Data Science"]},
-      {name:"Nebius Build Week Hackathon in Partnership with NVIDIA", loc:"Berlin", date:"18 Oct", tags:["AI"]},
-      {name:"robo.innovate Hackathon 2026", loc:"Munich", date:"23-28 Oct", price:"€10,000", tags:["Robotics","AI","IoT","Hardware","Dev Tools"]},
-      {name:"thws Hackathon InclusivAI: Empowering Diversity and Reducing Barriers with AI", loc:"Würzburg", date:"29 Oct", tags:["AI","Social Impact","Accessibility","EdTech","Mobility"]},
-      {name:"HACK THE MITTELSTAND – Agentic AI in Action", loc:"Augsburg", date:"10 Nov", price:"€3,500", tags:["AI"]},
-      {name:"MagdeHack", loc:"Magdeburg", date:"13-14 Nov", tags:["Dev Tools","Social Impact","Open Source"]},
-      {name:"PushQuantum Conference & Hackathon 2026", loc:"Munich", date:"20-22 Nov", tags:["Quantum Computing","Dev Tools","Open Source"]},
-      {name:"Hack the Mittelstand – Agentic AI in Action", loc:"Munich", date:"26 Nov", price:"€2,000", tags:["AI","Social Impact","Dev Tools"]},
-      {name:"MAKEATHON - Innovating Without Borders", loc:"Karlsruhe", date:"9-10 Dec", perks:["✈️ Travel","🏨 Stay"], tags:["AI","Industry 4.0","Social Impact","Dev Tools"]},
-    ]},
-    {code:"ch", name:"Switzerland", events:[
-      {name:"Legal Hackathon", loc:"Kloten", date:"23 Sep", tags:["AI","Data Science","Dev Tools","Open Source","Social Impact"]},
-      {name:"Geneva AI Hackathon", loc:"Geneva", date:"25-27 Sep", tags:["AI","Open Source","HealthTech","Social Impact"]},
-    ]},
-  ]},
-  {name:"Western Europe", codes:["be","fr","ie","nl","gb"], countries:[
-    {code:"be", name:"Belgium", events:[
-      {name:"Malt x Antasphere AI Hackathon", loc:"Brussels", date:"2 Oct", price:"€10,000", tags:["AI","Dev Tools"]},
-      {name:"Hacking for Good 2026", loc:"Ghent", date:"29 Oct", tags:["AI","HealthTech","Social Impact"]},
-    ]},
-    {code:"fr", name:"France", events:[
-      {name:"{Tech: Europe} AI Gaming Hack", loc:"Paris", date:"26 Sep", tags:["AI","Gaming"]},
-      {name:"Secure Horizons", loc:"Cergy", date:"10-11 Oct", price:"€15,000", tags:["AI","Cybersecurity","Blockchain"]},
-      {name:"Ocean Hackathon®: Data, an Event and an International Community", loc:"Brest", date:"16-18 Oct", tags:["Sustainability","Data Science","AI","Social Impact"]},
-    ]},
-    {code:"ie", name:"Ireland", events:[
-      {name:"Build for Ireland: OpenAI x Give(a)Go x Dogpatch Labs", loc:"Dublin", date:"4 Oct", tags:["AI","Social Impact","Smart Cities"]},
-    ]},
-    {code:"nl", name:"Netherlands", events:[
-      {name:"GitHub Copilot Hackathon", loc:"Utrecht", date:"22 Sep", tags:["AI","Dev Tools"]},
-      {name:"La Machine: Robotics Hackathon by Tech Makers", loc:"Amsterdam", date:"2-4 Oct", tags:["Robotics"]},
-    ]},
-    {code:"gb", name:"United Kingdom", events:[
-      {name:"Tenzo's AI Buildathon", loc:"London", date:"23 Sep", tags:["AI","Data Science"]},
-      {name:"Claude x Softr: AI Build Day Hackathon", loc:"London", date:"30 Sep", tags:["AI","Dev Tools"]},
-      {name:"AI Hackathon", loc:"Saint Helier", date:"2-4 Oct", price:"£10,000", tags:["AI","Social Impact","Smart Cities","FinTech","HealthTech"]},
-      {name:"EAT_HACK - the world's first AI & eating hackathon", loc:"London", date:"3 Oct", price:"£1,000", tags:["AI","Retail","Data Science","Social Impact"]},
-      {name:"One-Shot Vibecoding Penthouse Game Jam", loc:"London", date:"3 Oct", tags:["Gaming"]},
-      {name:"IBM Z Datathon 2026", loc:"London", date:"17-18 Oct", price:"US\\$50,000", tags:["AI","Dev Tools","Open Source","Social Impact","Data Science"]},
-      {name:"IKU Womxn in STEM Hackathon", loc:"London", date:"17-18 Oct", tags:["Open Source","Dev Tools","Women in Tech","Social Impact"]},
-      {name:"Green Economies Youth Hack - Young Manchester", loc:"Manchester", date:"21 Oct", perks:["✈️ Travel"], tags:["Sustainability","ClimateTech","Social Impact"]},
-    ]},
-  ]},
-  {name:"Northern Europe", codes:["dk","fi","lt"], countries:[
-    {code:"dk", name:"Denmark", events:[
-      {name:"Danish BIO-RED Hackathon", loc:"Copenhagen", date:"5-6 Oct", price:"€9,000", perks:["✈️ Travel"], tags:["Life Sciences","HealthTech","Sustainability","Open Source"]},
-    ]},
-    {code:"fi", name:"Finland", events:[
-      {name:"EPICENTER AI CAMPFIRE: Vibe Coding Session", loc:"Helsinki", date:"14 Sep", tags:["AI","Dev Tools"]},
-    ]},
-    {code:"lt", name:"Lithuania", events:[
-      {name:"BIO-RED Cross-Regional Kaunas Hackathon 2026: AI & health data for personalised medicine", loc:"Kaunas", date:"2-3 Oct", perks:["✈️ Travel"], tags:["AI","HealthTech","Data Science","Life Sciences"]},
-    ]},
-  ]},
-  {name:"Southern Europe", codes:["it","pt","es"], countries:[
-    {code:"it", name:"Italy", events:[
-      {name:"Hackathon Future Lab 2026", loc:"Reggio Emilia", date:"17 Sep", tags:["Sustainability","IoT","AI","Industry 4.0"]},
-    ]},
-    {code:"pt", name:"Portugal", events:[
-      {name:"Portugal Centro Region BIO-RED Cross-Regional Hackathon", loc:"Cantanhede", date:"29 Sep", perks:["✈️ Travel","🏨 Stay"], tags:["Life Sciences","HealthTech"]},
-    ]},
-    {code:"es", name:"Spain", events:[
-      {name:"The FIRST Running Hackathon in Barcelona", loc:"Barcelona", date:"24 Sep", tags:["AI"]},
-      {name:"PATIO AI & Creativity Summit: Hackathon", loc:"Madrid", date:"7 Oct", tags:["AI"]},
-    ]},
-  ]},
-  {name:"Central & Eastern Europe", codes:["cz","pl","ro"], countries:[
-    {code:"cz", name:"Czechia", events:[
-      {name:"Zero to Hero: From Idea to Hackathon // Ostrava", loc:"Ostrava", date:"23 Sep", price:"US\\$150", tags:["AI","Blockchain"]},
-    ]},
-    {code:"pl", name:"Poland", events:[
-      {name:"BLOCKCHAIN HACK KRAKOW", loc:"Krakow", date:"19-20 Sep", price:"US\\$3,000", tags:["Blockchain"]},
-    ]},
-    {code:"ro", name:"Romania", events:[
-      {name:"Hackathon AI Iași 2026", loc:"Iași", date:"16-18 Oct", price:"RON 7,500", tags:["AI","Smart Cities","Sustainability","Social Impact"]},
-      {name:"UniHack 2026", loc:"Timișoara", date:"13-15 Nov", perks:["🏨 Stay"], tags:["Social Impact","Smart Cities","Cybersecurity","Open Source","Sustainability"]},
-    ]},
-  ]},
-  {name:"Online / Remote", codes:["online"], countries:[
-    {code:"online", name:"Online", events:[
-      {name:"Nordic AI Cup 2026", loc:"Online", date:"17-20 Sep", perks:["✈️ Travel","🏨 Stay","🖥️ Online"], tags:["AI","Data Science","Open Source"]},
-      {name:"4th Annual Veeam Community Hackathon", loc:"Online", date:"12-16 Oct", perks:["🖥️ Online"], tags:["Open Source","AI","Dev Tools"]},
-      {name:"SchubKI Hackathon", loc:"Online", date:"16-21 Oct", perks:["🖥️ Online"], tags:["AI","Data Science","IoT","Mobility","Life Sciences"]},
-    ]},
-  ]},
-];
+const REGIONS = ${JSON.stringify(REGIONS)};
+const WEEK = ${JSON.stringify(WEEK)};
+const LABEL = ${JSON.stringify(LABEL)};
+const NON_COUNTRY = ${JSON.stringify(NON_COUNTRY)};
+const NON_COUNTRY_WORD = ${JSON.stringify(NON_COUNTRY_WORD)};
+const SHORT_TAGS = ${JSON.stringify(LONG_TO_SHORT_TAGS)};
 const TOTAL = REGIONS.reduce((n,r)=>n+r.countries.reduce((m,c)=>m+c.events.length,0),0);
 const NCOUNTRIES = REGIONS.reduce((n,r)=>n+r.countries.length,0);
 const NREGIONS = REGIONS.length;
-const WEEK = "SINCE 14 SEP 2026";
 
 const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
 const deco = \`<div class="grain"></div><div class="stars"></div>\`;
 ${flagsLine}
 FLAGS.online = '<rect width="3" height="2" fill="#0f2942"/><circle cx="1.5" cy="1" r="0.75" fill="none" stroke="#8ad4ff" stroke-width="0.06"/><ellipse cx="1.5" cy="1" rx="0.3" ry="0.75" fill="none" stroke="#8ad4ff" stroke-width="0.05"/><line x1="0.75" y1="1" x2="2.25" y2="1" stroke="#8ad4ff" stroke-width="0.05"/>';
+${extraFlagsScript}
 function flag(code,h){const w=(h*1.5).toFixed(1);return \`<svg viewBox="0 0 3 2" width="\${w}" height="\${h}" preserveAspectRatio="none" style="border-radius:2px;box-shadow:0 0 0 1px rgba(255,255,255,.22);display:inline-block;vertical-align:middle">\${FLAGS[code]||''}</svg>\`;}
 function flagRow(codes,h){return \`<span style="display:inline-flex;gap:6px;vertical-align:middle">\`+codes.map(c=>flag(c,h)).join('')+\`</span>\`;}
+function regionDisplayName(r){return (r.countries.length===1 && r.countries[0].code==='online') ? r.countries[0].name : r.name;}
 
 function brand(right){
   return \`<div class="brand">
@@ -213,7 +256,7 @@ function tags(list, sz, price, perks){
   const items = [];
   if(price) items.push(priceTag(price));
   (perks||[]).forEach(p=>items.push(perkTag(p)));
-  (list||[]).forEach(t=>items.push(\`<span class="tag" style="font-size:\${sz}px;padding:\${sz<14?'3px 8px':'4px 10px'}">\${esc(t)}</span>\`));
+  (list||[]).forEach(t=>items.push(\`<span class="tag" style="font-size:\${sz}px;padding:\${sz<14?'3px 8px':'4px 10px'}">\${esc(SHORT_TAGS[t]||t)}</span>\`));
   if(!items.length) return "";
   return \`<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">\${items.join("")}</div>\`;
 }
@@ -221,16 +264,16 @@ function tags(list, sz, price, perks){
 /* ---------- Option A : carousel ---------- */
 function slideCover(){
   return \`<div class="card" style="height:1350px;padding:92px 96px">\${deco}<div class="inner">
-    \${brand(\`NEW HACKATHONS · EUROPE\`)}
+    \${brand(\`NEW HACKATHONS · ${DISPLAY_LABEL.toUpperCase()}\`)}
     <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
       <div class="foot-mono" style="font-size:22px">PUBLISHED · \${WEEK}</div>
-      <div style="font-size:112px;line-height:1.0;font-weight:900;letter-spacing:-.03em;margin:18px 0 0"><span style="color:#1e96f0">\${TOTAL}</span> new hackathons<br>in Europe <span style="color:#1e96f0">this week</span></div>
+      <div style="font-size:${HEADLINE_SIZE}px;line-height:1.0;font-weight:900;letter-spacing:-.03em;margin:18px 0 0">${HEADLINE_HTML}</div>
       <div style="font-size:30px;font-weight:600;color:#c7cad0;margin-top:34px;max-width:900px;line-height:1.4">
-        Across \${NCOUNTRIES} countries and \${NREGIONS} regions. Swipe through by region →</div>
+        ${SUBLINE_HTML}</div>
     </div>
     <div style="display:flex;gap:34px;flex-wrap:wrap">
       \${REGIONS.map(r=>\`<div><div style="font-size:34px">\${flagRow(r.countries.filter(c=>c.events.length).map(c=>c.code),30)}</div>
-        <div style="font-size:24px;font-weight:700;margin-top:6px">\${esc(r.name)}</div>
+        <div style="font-size:24px;font-weight:700;margin-top:6px">\${esc(regionDisplayName(r))}</div>
         <div class="foot-mono" style="font-size:16px;margin-top:2px">\${(x=>x+(x===1?" event":" events"))(r.countries.reduce((m,c)=>m+c.events.length,0))}</div></div>\`).join("")}
     </div>
     <div class="foot-mono" style="font-size:16px;margin-top:40px">→ ALL EVENTS + FILTER · LINK IN COMMENTS</div>
@@ -270,19 +313,21 @@ function slideRegionPage(r, regionNo, chunk, pageNo, pageCount){
         \${tags(e.tags,17,e.price,e.perks)}
       </div>\`).join("")}
     </div>\`).join("");
-  const part = pageCount>1 ? \` · \${pageNo}/\${pageCount}\` : "";
   return \`<div class="card" style="height:1350px;padding:88px 92px">\${deco}<div class="inner">
-    \${brand(\`EUROPE · \${WEEK}\`)}
+    \${brand(\`\${WEEK}\`)}
     <div style="margin-top:40px">
-      <div class="foot-mono" style="font-size:20px">REGION \${regionNo} / \${NREGIONS}\${part}</div>
+      \${NREGIONS>1?\`<div class="foot-mono" style="font-size:20px">REGION \${regionNo} / \${NREGIONS}</div>\`:""}
       <div style="display:flex;align-items:baseline;gap:20px;margin-top:8px">
-        <div style="font-size:76px;font-weight:900;letter-spacing:-.03em">\${esc(r.name)}</div>
+        <div style="font-size:76px;font-weight:900;letter-spacing:-.03em">\${esc(regionDisplayName(r))}</div>
         <div style="font-size:30px;font-weight:800;color:#1e96f0">\${n} new</div>
       </div>
-      <div class="flags" style="margin-top:12px">\${flagRow(r.codes,26)}</div>
+      \${NON_COUNTRY?"":\`<div class="flags" style="margin-top:12px">\${flagRow(r.codes,26)}</div>\`}
     </div>
     <div class="rbody" style="flex:1;overflow:hidden"><div class="rbody-in">\${body}</div></div>
-    <div class="foot-mono" style="font-size:15px;margin-top:24px">→ ALL EVENTS + FILTER · LINK IN COMMENTS</div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:24px">
+      <div class="foot-mono" style="font-size:15px">→ ALL EVENTS + FILTER · LINK IN COMMENTS</div>
+      \${pageCount>1?\`<div class="foot-mono" style="font-size:15px">\${pageNo}/\${pageCount}</div>\`:""}
+    </div>
   </div></div>\`;
 }
 document.getElementById("slidesA").innerHTML =
@@ -291,6 +336,24 @@ document.getElementById("slidesA").innerHTML =
     const pages = regionPages(r);
     return pages.map((chunk,pi)=>\`<div class="scaler">\${slideRegionPage(r,i+1,chunk,pi+1,pages.length)}</div>\`).join("");
   }).join("");
+
+function slugify(name){
+  return name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+}
+(function(){
+  const names = ['00-cover'];
+  let counter = 0;
+  REGIONS.forEach(r=>{
+    const pages = regionPages(r);
+    const slug = slugify(r.name);
+    pages.forEach((_,pi)=>{
+      counter++;
+      const nn = String(counter).padStart(2,'0');
+      names.push(pages.length>1 ? \`\${nn}-\${slug}-\${pi+1}\` : \`\${nn}-\${slug}\`);
+    });
+  });
+  window.__slideNames = names;
+})();
 
 function fitRegionBodies(){
   document.querySelectorAll("#slidesA .card .rbody").forEach(box=>{
@@ -320,5 +383,46 @@ document.getElementById("theme").addEventListener("click", ()=>{
 </script>
 `;
 
-fs.writeFileSync(path.join(__dirname, 'weekly-roundup-new.html'), out, 'utf-8');
-console.log('done', out.length);
+  return out;
+}
+
+module.exports = {
+  parseArgs,
+  regionLabel,
+  isNonCountryRegion,
+  headlineWords,
+  bareLen,
+  headlineFontSize,
+  headlineLabelHtml,
+  joinWithAnd,
+  sinceDateFromWeek,
+  escNode,
+  LONG_TO_SHORT_TAGS,
+  shortTag,
+  buildExtraFlagsScript,
+  extractLayoutParts,
+  buildRoundupHtml,
+};
+
+if (require.main === module) {
+  const args = parseArgs(process.argv.slice(2));
+  if (!args.data || !args.out) {
+    console.error('Usage: node build-new-roundup.js --data=<path> --out=<path>');
+    process.exit(1);
+  }
+
+  const data = require(path.resolve(args.data));
+  const layoutsHtml = fs.readFileSync(path.join(__dirname, 'weekly-roundup-layouts.html'), 'utf-8');
+  const out = buildRoundupHtml({
+    regions: data.regions,
+    week: data.week,
+    theme: data.theme || null,
+    extraFlags: data.extraFlags || {},
+    layoutsHtml,
+    baseDir: __dirname,
+  });
+
+  fs.mkdirSync(path.dirname(path.resolve(args.out)), { recursive: true });
+  fs.writeFileSync(path.resolve(args.out), out, 'utf-8');
+  console.log('done', out.length);
+}

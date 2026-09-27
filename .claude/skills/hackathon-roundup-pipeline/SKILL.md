@@ -1,192 +1,111 @@
 ---
 name: hackathon-roundup-pipeline
-description: "Run the full weekly 'New hackathons in Europe' pipeline from one pasted raw roundup: produce both deliverables (cleaned LinkedIn text post AND the 1350x1350 carousel), publish the carousel as a review artifact, then run a consistency / no-ai-slop / double-check QA pass across both. Use when the user pastes a new week's raw roundup and wants the carousel built or updated, or says 'new roundup', 'new week', 'build the carousel', 'run the roundup pipeline', 'update the roundup'. For a text-post-only cleanup with no carousel, use hackathon-roundup-format instead."
+description: "Run the carousel pipeline for one region's raw 'New hackathons' roundup paste: build the 1350x1350 carousel, publish it as a review artifact, then run a carousel-rendering QA pass. Use when the user pastes one region's raw roundup block and wants its carousel built or updated, or says 'new roundup', 'build the carousel', 'run the roundup pipeline', 'update the roundup'. This skill is carousel-only — it does not produce the LinkedIn text post. For the text post, use hackathon-roundup-format-full, hackathon-roundup-format-compact, or hackathon-roundup-format-regions directly."
 metadata:
-  version: 1.0.0
+  version: 3.0.0
 ---
 
 # Hackathon roundup pipeline
 
-Orchestrates the weekly roundup. It calls two other skills as sub-steps (`hackathon-roundup-format` for the text, `no-ai-slop` for the copy) and drives the carousel build scripts. It does not re-derive their rules.
+Builds and publishes the carousel for one region's raw roundup paste. It does not touch the text post — `hackathon-roundup-format-full`, `hackathon-roundup-format-compact`, and `hackathon-roundup-format-regions` are separate, standalone skills the user runs directly when they want `post.md`/`post-compact.md`/`post-regions.md`. This skill never invokes them.
+
+Parsing the raw paste is not this skill's job either — that's `hackathon-roundup-parse`, the shared step both this skill and the three text-post skills consume, so the raw text only ever gets parsed once per region.
 
 ## What the build script is
 
-`hackathon-spotlights/build-new-roundup.js` is a small Node file that holds one week's event data (the `REGIONS` array and a `WEEK` label). Running `node build-new-roundup.js` reads the shared card design out of `weekly-roundup-layouts.html`, plugs the event data into it, and writes `weekly-roundup-new.html`: the finished carousel (cover slide + one slide per region) that gets published as the review artifact and later screenshotted to PNGs by `render-pngs.js`.
+`hackathon-spotlights/build-new-roundup.js` is a generic renderer, not a per-run file to edit. Each run reads a per-run `data.js` (produced by `hackathon-roundup-parse`, see below) holding that run's event data (a `regions` array — normally just one entry now — and a `week` label). Running `node build-new-roundup.js --data=<path/to/data.js> --out=<path/to/output.html>` reads the shared card design out of `weekly-roundup-layouts.html`, plugs the data-file's event data into it, and writes the HTML at `--out`: the finished carousel (cover slide + one slide per region-page) that gets published as the review artifact and later screenshotted to PNGs by `render-pngs.js`. Nothing about the run is hand-edited into the script itself, so N regions can be built concurrently (by separate sessions or subagents) with zero shared-file writes.
 
-The cover slide's headline is the week's event count (`TOTAL`, auto-computed from `REGIONS`), not a generic title: `"${TOTAL} new hackathons in Europe this week"`, with `${TOTAL}` and `"this week"` both in the accent blue (`#1e96f0`). This lives in `slideCover()` in both `weekly-roundup-layouts.html` (source of truth for the card design) and `build-new-roundup.js` (its own escaped copy) — keep the two in sync if either changes. No manual edit needed per week: `TOTAL` is derived from `REGIONS`, so it updates automatically.
+The cover slide's headline is the region's event count (`TOTAL`, auto-computed from `regions`), not a generic title: `"${TOTAL} new hackathons in <region> this week"`, with `${TOTAL}` and `"this week"` both in the accent blue (`#1e96f0`). `<region>` is derived automatically: the single region's own name when `regions.length === 1` (the normal case now), or `"Europe"` otherwise. This lives in `slideCover()` in both `weekly-roundup-layouts.html` (source of truth for the card design) and `build-new-roundup.js` (its own escaped copy) — keep the two in sync if either changes. No manual edit needed for `TOTAL`, the region label, the headline font size, or the brand/copy strings: all are derived from the data file.
 
 ## When to use
 
-The user pastes a block shaped like the weekly roundup (bold-unicode region headers with flag emoji and a count like `🇩🇪🇦🇹🇨🇭 𝗗𝗔𝗖𝗛 (𝟭𝟲)`, flag-emoji country sub-headers, bulleted events) and wants the carousel built or refreshed for that week.
+The user pastes one region's raw roundup block (bold-unicode region header with flag emoji and a count like `🇩🇪🇦🇹🇨🇭 𝗗𝗔𝗖𝗛 (𝟮𝟲)`, flag-emoji country sub-headers, bulleted events) and wants that region's carousel built or refreshed, or asks to build the carousel for a region already parsed into `data.js`.
 
 ## When not to use
 
-If the user only wants the raw text tidied and no carousel, use `hackathon-roundup-format` directly. This skill is for a full week's run of both deliverables.
+If the user only wants the raw text tidied into a LinkedIn post and no carousel, use `hackathon-roundup-format-full`, `hackathon-roundup-format-compact`, or `hackathon-roundup-format-regions` directly, whichever output they need — this skill does not produce or update those files.
 
-## Stage 1 - Text post
+## Stage 1 - Carousel build
 
-Invoke the `hackathon-roundup-format` skill on the raw text. It writes `hackathon-spotlights/weekly-roundup-<published-since-date>/post.md` plus a places-and-dates-only `post-compact.md` and a region/country-counts-only `post-regions.md`, all in the same folder, and derives `<published-since-date>` (e.g. "published since 31 Aug" in 2026 -> `2026-08-31`). That date is the dated-folder key for the whole week; reuse it in Stage 3.
+Ensure `hackathon-spotlights/weekly-roundup-<published-since-date>/<region-slug>/data.js` exists for this region — if it doesn't yet (or the user just pasted fresh raw text for a region that already has one, which is a refresh request), run `hackathon-roundup-parse` first. See that skill for the region-slug rule, the `data.js` shape, and its own QA pass against the raw source — this skill doesn't re-parse or re-verify raw-source fidelity, it trusts `data.js`.
 
-## Stage 2 - Carousel build
+Everything that used to be hand-typed — the brand/copy strings, the headline font size, the `<meta>`/`<h1>`/intro `<p>` text, and `render-pngs.js`'s slide-name list — is derived automatically from `data.js`: the region label (the single region's own name, or `"Europe"` when `regions.length > 1`), the headline size bucket, and `window.__slideNames` all come out of `regions`/`week`. There is nothing to hand-edit or grep-to-confirm, and never edit `build-new-roundup.js`/`render-pngs.js` themselves — they stay generic and shared.
 
-Parse the *same* raw text into the `REGIONS` shape and edit `hackathon-spotlights/build-new-roundup.js` **in place** (do not copy it to a dated file). Update:
+### Tags: long form (in `data.js`) to carousel short form
 
-- `REGIONS` - the week's events.
-- `WEEK` - e.g. `"SINCE 6 SEP 2026"`.
-- The three date-bearing copy strings: the `<meta name="description">` "since X" date, the `<h1>` if it names a date, and the intro `<p>` "published since X" date plus its list of region names. The `<title>` has no date.
-- `hackathon-spotlights/render-pngs.js` - the `names` array (see below).
-
-### Data model
-
-```
-{ name, codes:["iso2", ...], countries:[
-    { code:"iso2", name, events:[
-        { name, loc, date, tags:["short", ...], price?, perks?:["✈️ Travel", ...] }
-    ]}
-]}
-```
-
-### Tags: long form to carousel short form
-
-The text post keeps long-form tags; the carousel uses short forms to fit the card. This mapping is the source of truth (`hackathon-roundup-format` Rule 5 points here). Every raw tag must resolve to exactly one short tag. If a raw tag is not in this table and has no obvious short form, stop and ask the user rather than guessing.
-
-| Long form (post) | Short form (carousel) |
-|---|---|
-| Artificial Intelligence (AI) | AI |
-| Developer Tools / DX | Dev Tools |
-| Internet of Things (IoT) | IoT |
-| Data Science & Analytics | Data Science |
-| Robotics & Autonomous Systems | Robotics |
-| HealthTech / Digital Health | HealthTech |
-| Industry 4.0 / Smart Manufacturing | Industry 4.0 |
-| API & Platform Engineering | API & Platform Eng |
-| DevOps & Cloud Computing | DevOps & Cloud |
-| SpaceTech / Aerospace | SpaceTech |
-| NeuroTech / Neuroinformatics | NeuroTech |
-| Accessibility & Assistive Tech | Accessibility |
-| GovTech / Public Sector | GovTech |
-| MarTech / AdTech | MarTech |
-| Mobility & Transportation | Mobility |
-| Digital Identity & Privacy | Digital Identity |
-| Gaming & Game Development | Gaming |
-| Life Sciences & Biotechnology | Life Sciences |
-| Hardware & Embedded Systems | Hardware |
-| HCI / UX Innovation | HCI |
-| Supply Chain & Logistics | Supply Chain |
-| LegalTech / Legal AI | LegalTech |
-| Women in Tech / Diversity | Women in Tech |
-| Retail & E-Commerce | Retail |
-| EdTech / Education Technology | EdTech |
-
-Pass through unchanged (long form == short form): FinTech, Blockchain, Web3, Open Source, Social Impact, Sustainability, Smart Cities, Energy Systems, Cybersecurity, HRTech, ClimateTech, CleanTech, Bioinformatics, Digital Humanities, Reproducible Research, PropTech, Quantum Computing.
-
-Add new rows here when a new tag appears.
-
-### Cities
-
-Same as `hackathon-roundup-format` Rule 3: use the English exonym (Wien -> Vienna, München -> Munich, Скопје -> Skopje, and so on). Keep `loc: "Online"` for online events.
-
-### Date ranges
-
-Plain hyphen, not en-dash, in `date:` values too (`"26-27 Sep"`, not `"26–27 Sep"`). The PNGs are reader-facing, so the same reasoning as `hackathon-roundup-format` Rule 3b applies.
-
-### Price
-
-Carry the exact string the formatted `post.md` uses (`hackathon-roundup-format` Rule 4 form): `"£1,000"`, `"€6,000"`, `"US$250,000"`, `"CHF 2,000"`, `"NOK 20,000"`. US dollar amounts keep the `US` prefix on the glyph (`US$250,000`, not a bare `$250,000`) since a lone `$` is ambiguous on a Europe-focused graphic. Inside the JS template literal a `$` must be written `\$` (`price:"US\$250,000"`). A bare number with no symbol or code (`price:"1,000"`) is a gap: keep it but flag it in Stage 4.
-
-### Perks
-
-Carry `✈️ Travel`, `🏨 Stay`, and similar perk chips from the raw text into `perks:[...]`, in source order. Missing a perk that the raw text has is a Stage 4 finding.
-
-### Region grouping
-
-Fixed set of groups: DACH, Western Europe, Northern Europe, Southern Europe, Central & Eastern Europe, Southeast Europe. Put a new country in the geographically correct existing group. North Macedonia and Türkiye are Southeast Europe. Do not create a one-country group unless nothing fits, and flag it in Stage 4 if you do.
+`data.js` holds long-form tags verbatim (`hackathon-roundup-parse`'s job) — the carousel needs the short form to fit the card. That conversion is a code-level concern now: `build-new-roundup.js` has a `LONG_TO_SHORT_TAGS` table and a `shortTag()` function, applied automatically at render time. Add a new row there (not in this doc) when a genuinely new tag category appears with no obvious short form.
 
 ### Flags
 
-Every country `code` needs a `FLAGS` entry. All flags — the base set in `weekly-roundup-layouts.html` and every hand-added one in `build-new-roundup.js` — are real flag artwork from the [hampusborgos/country-flags](https://github.com/hampusborgos/country-flags) repo (MIT-licensed SVGs), never hand-drawn approximations. Earlier weeks used hand-coded SVG shapes (plain bands, a cross) for "simple" flags and only reached for a real image on flags with a coat of arms or emblem; that split was dropped after it turned out several "simple" flags (Portugal, Spain, Slovakia) actually carry a coat of arms that a few `<rect>`s can't represent, so it's real artwork for all of them now, no exceptions.
+Every country `code` needs a `FLAGS` entry. All flags — the base set in `weekly-roundup-layouts.html` and every hand-added one via `extraFlags` — are real flag artwork from the [hampusborgos/country-flags](https://github.com/hampusborgos/country-flags) repo (MIT-licensed SVGs), never hand-drawn approximations, no exceptions (even "simple-looking" flags like Portugal/Spain/Slovakia carry a coat of arms a few `<rect>`s can't represent).
 
 To add a country not yet covered:
 1. Download the source file: `https://raw.githubusercontent.com/hampusborgos/country-flags/main/svg/<code>.svg` — save it to `hackathon-spotlights/flags/<code>.svg` (source-of-truth copy, kept in the repo for reuse).
-2. Base64-encode it and embed as a data URI:
-   `FLAGS.xx = '<image x="0" y="0" width="3" height="2" preserveAspectRatio="none" href="data:image/svg+xml;base64,..."/>';`
-3. Add it to the single-line `const FLAGS = {...}` object literal in `weekly-roundup-layouts.html` (the base set) if it's a common European country likely to recur; otherwise append a one-off `FLAGS.xx = '...'` assignment in `build-new-roundup.js` right after the `${flagsLine}` injection, same as `FLAGS.online` (the one non-country pictogram, which stays hand-drawn since it isn't a real flag).
+2. Add it to the single-line `const FLAGS = {...}` object literal in `weekly-roundup-layouts.html` (the base set) if it's a common European country likely to recur.
+3. Otherwise (a one-off for this run only), add `<code>: "flags/<code>.svg"` to this run's `data.js` under `extraFlags` — `build-new-roundup.js` reads, base64-encodes and embeds it automatically. `FLAGS.online` (the one non-country pictogram) stays hand-drawn in the script since it isn't a real flag.
 
-Never hand-code flag geometry (bands, crosses, emblems) from memory — always fetch the real SVG. Flag `<image>` data URIs add a few KB to tens of KB each to `weekly-roundup-new.html` depending on the flag's complexity (Spain and Portugal's coats of arms are the largest); that's fine.
+Never hand-code flag geometry (bands, crosses, emblems) from memory — always fetch the real SVG.
 
-### render-pngs.js names array
+### render-pngs.js slide names
 
-Rewrite `names` so it is index-matched to the rendered slides: `cover` first, then one entry per region-page. A region's page count is `ceil(region event count / MAX_EVENTS_PER_SLIDE)` where `MAX_EVENTS_PER_SLIDE = 4`. Naming: `NN-<region-slug>[-<pageNo>]`, e.g. `05-western-europe-1`. A shorter array is tolerated (the script falls back to `slide-NN`) but keep it complete.
+`render-pngs.js` reads `window.__slideNames` straight from the rendered page, which `build-new-roundup.js` computes from `regions`: `cover` first, then one entry per region-page, `NN-<region-slug>[-<pageNo>]` (e.g. `01-dach-1`), matching the naming already used in published folders. No hand-maintained array.
 
 ### Run it
 
 ```
-cd hackathon-spotlights && node build-new-roundup.js
+cd hackathon-spotlights
+node build-new-roundup.js --data=weekly-roundup-<date>/<region-slug>/data.js --out=weekly-roundup-<date>/<region-slug>/carousel.html
 ```
 
-Confirm it logs `done` and rewrites `weekly-roundup-new.html`.
+Confirm it logs `done` and writes the HTML at `--out`.
 
-## Stage 3 - Review artifact
+## Stage 2 - Review artifact
 
-Publish `hackathon-spotlights/weekly-roundup-new.html` as a **new artifact** (one per week), favicon `🇪🇺`. Give the user the URL and tell them to move the share pin so viewers see the new version. Do not render PNGs at this stage; the user reviews the artifact first.
+Publish the generated HTML (from `--out` above) as a **new artifact** (one per region), favicon `🇪🇺`. Give the user the URL and tell them to move the share pin so viewers see the new version. Do not render PNGs at this stage; the user reviews the artifact first.
 
-## Stage 4 - QA pass
+## Stage 3 - QA pass (carousel rendering only)
 
-Write a report in chat (not a file). Group the findings, most-consequential first. Apply A, B and C fixes only after the user confirms; leave D for the user.
+Write a report in chat (not a file). Raw-source fidelity (event counts, dates/cities/prices, tags carried through, country membership) was already verified by `hackathon-roundup-parse`'s own QA pass — don't re-check it here. This pass only covers how `data.js` rendered into the carousel.
 
-### A. Cross-deliverable consistency (post.md vs carousel)
+### A. Carousel internals
 
-- Same event set in both.
-- Each region header count `(N)` in `post.md` equals the carousel region's event count equals the events you actually count.
-- Every event's date, city and price string is identical between the two.
-- Every long-form tag in `post.md` resolves through the tag table to a short-form tag in the carousel, and none is dropped or added.
-- Region membership is the same in both.
-
-### B. Carousel internals
-
-- `render-pngs.js` `names` length equals `cover + sum of region pages`.
+- `window.__slideNames` length equals `cover + sum of region pages` (check the rendered page or `render-pngs.js`'s "found cards" log line).
+- Every long-form tag in `data.js` resolves through `build-new-roundup.js`'s `LONG_TO_SHORT_TAGS` table to a short form; an unmapped tag passes through unchanged — flag that as worth a second look, it likely needs a new table row.
 - Every country `code` has a `FLAGS` glyph (no silent empty flag box).
-- Each region's `codes` array lists every country that has events that week.
+- The region's `codes` array lists every country that has events.
 - Pagination does not leave a country header as the last line of a slide with its events pushed to the next slide.
-- `WEEK` and all date-bearing copy strings are bumped to this week.
+- `week` in `data.js` is this run's actual "published since" date.
 
-### C. no-ai-slop on the editorial copy only
+### B. no-ai-slop on the editorial copy only
 
-Run the `no-ai-slop` skill against these strings only: the cover subline, the cover headline accent word ("this week"), the intro `<p>`, and the `<h2>`. Do **not** touch event names, cities or tags: they are verbatim data, same "Do not touch" logic as `hackathon-roundup-format`. Check for em-dashes (use a hyphen or colon), banned vocabulary, negative parallelism, and whether "this week" is accurate for the actual published-since span (flag it if the span is much longer than a week).
+Run the `no-ai-slop` skill against these strings only: the cover subline, the cover headline accent word ("this week"), the intro `<p>`, and the `<h2>`. Do **not** touch event names, cities or tags: they are verbatim data. Check for em-dashes (use a hyphen or colon), banned vocabulary, negative parallelism, and whether "this week" is accurate for the actual published-since span (flag it if the span is much longer than a week).
 
-### D. Worth double-checking (do not auto-fix, list for the user)
+### C. Worth double-checking (do not auto-fix, list for the user)
 
-- An event's date span longer than about 4 to 5 days.
-- An end date earlier than the start date.
-- A prize about 10x or more the rest of the batch.
-- A price with no currency symbol or code (bare number).
-- A perk in the raw text missing from the carousel.
-- An event title shortened or abbreviated versus the raw source.
-- A flag newly added this week (real artwork, but worth a quick visual glance since it wasn't in the base set before).
-- A one-country region group.
-- A country placed in a region a reader would not expect.
+- A flag newly added this run via `extraFlags` (real artwork, but worth a quick visual glance since it wasn't in the base set before).
 
 If the user already confirmed one of these figures earlier in the conversation, do not re-flag it.
 
 ## Output contract
 
-- `post.md`, `post-compact.md`, and `post-regions.md` written by `hackathon-roundup-format`.
-- `build-new-roundup.js` and `render-pngs.js` edited in place.
-- `weekly-roundup-new.html` regenerated.
-- One new artifact URL for the week, handed to the user.
-- The Stage 4 report in chat.
+- The generated carousel HTML at `hackathon-spotlights/weekly-roundup-<date>/<region-slug>/carousel.html` (from a `data.js` this skill did not itself write — see `hackathon-roundup-parse`).
+- `build-new-roundup.js` and `render-pngs.js` themselves are untouched.
+- One new artifact URL for the region, handed to the user.
+- The Stage 3 report in chat.
 
 Stop there. PNG render is a separate step the user triggers after reviewing the artifact:
 
 ```
-cd hackathon-spotlights && node render-pngs.js
+cd hackathon-spotlights
+node render-pngs.js --html=weekly-roundup-<date>/<region-slug>/carousel.html --outdir=weekly-roundup-<date>/<region-slug>
 ```
 
-`render-pngs.js` strips the review-page zoom and chrome before screenshotting (see the Playwright note in `CLAUDE.md`); it writes 2700×2700 PNGs to `weekly-roundup-new-pngs/` (gitignored). Copy the finished set into `hackathon-spotlights/weekly-roundup-<published-since-date>/` (same folder as `post.md`), replacing any earlier render for that week.
+`render-pngs.js` strips the review-page zoom and chrome before screenshotting (see the Playwright note in `CLAUDE.md`) and writes 2700×2700 PNGs directly into `--outdir` — no separate staging folder or manual copy step, since `--outdir` already is the region's dated folder.
 
 ## Do not touch
 
-- Event titles, and dates as facts (normalize the dash and the city name only).
-- Flag emoji in the text post.
-- The deliberate long-form / short-form tag split between the two deliverables.
+- Event titles, and dates as facts — those are `hackathon-roundup-parse`'s normalization job, not this skill's.
+- Flag emoji.
+- The deliberate long-form (`data.js`) / short-form (carousel card) tag split.
 - The `--z: 1` `addInitScript` in `render-pngs.js` (Playwright zoom-repaint gotcha, see `CLAUDE.md`).
+- The text post (`post.md`/`post-compact.md`/`post-regions.md`) — this skill never writes or edits those; that's `hackathon-roundup-format-full`/`-format-compact`/`-format-regions`'s job, run separately.

@@ -1,0 +1,40 @@
+module.exports = {
+  week: "SINCE 21 SEP 2026",
+  regions: [
+    {name:"DACH", codes:["at","de","ch"], countries:[
+      {code:"at", name:"Austria", events:[
+        {name:"Uniforce Hackathon Vienna", loc:"Vienna", date:"8 Oct", tags:[]},
+        {name:"Cloudflight Coding Contest", loc:"Linz", date:"23 Oct", tags:["Artificial Intelligence (AI)","Data Science & Analytics"]},
+      ]},
+      {code:"de", name:"Germany", events:[
+        {name:"GTM Hackathon Berlin | powered by Apify and Bella&Bona", loc:"Berlin", date:"3 Oct", tags:["Artificial Intelligence (AI)","Data Science & Analytics","Developer Tools / DX","Open Source"]},
+        {name:"Light x Lovable x Everphone Finance Hackathon", loc:"Berlin", date:"7 Oct", tags:[]},
+        {name:"Strengthen Democracy I Ideathon", loc:"Essen", date:"9-10 Oct", tags:["Social Impact"]},
+        {name:"Accessibility Hackathon Hamburg", loc:"Hamburg", date:"10-11 Oct", tags:["Accessibility & Assistive Tech","Social Impact"]},
+        {name:"Digital Hackathon", loc:"Berlin", date:"10-11 Oct", tags:["Social Impact"]},
+        {name:"Franken Game Jam 2026", loc:"Bayreuth", date:"13-15 Nov", tags:["Gaming & Game Development"]},
+        {name:"Franken Game Jam 2026 (Bamberg)", loc:"Bamberg", date:"13-15 Nov", tags:["Gaming & Game Development"]},
+        {name:"Franken Game Jam 2026 (Coburg)", loc:"Coburg", date:"13-15 Nov", tags:["Gaming & Game Development"]},
+        {name:"Franken Game Jam 2026 (Hof)", loc:"Hof", date:"13-15 Nov", tags:["Gaming & Game Development"]},
+        {name:"Franken Game Jam 2026 (Nuremberg)", loc:"Nuremberg", date:"13-15 Nov", tags:["Gaming & Game Development"]},
+        {name:"Franken Game Jam 2026 Würzburg", loc:"Würzburg", date:"13-15 Nov", tags:["Gaming & Game Development"]},
+        {name:"CODEBURG Hackathon 2026", loc:"Coburg", date:"20-21 Nov", tags:[]},
+        {name:"DevFest Münster 2026: Agentic AI Hackathon", loc:"Münster", date:"21 Nov", tags:["Artificial Intelligence (AI)","Developer Tools / DX","Open Source","Internet of Things (IoT)"]},
+        {name:"4th Hackathon @ PMREXpo in collaboration with COREVAS®", loc:"Cologne", date:"24-26 Nov", price:"€4,500", perks:["🏨 Stay"], tags:["Artificial Intelligence (AI)","Internet of Things (IoT)","Open Source","Sustainability","Digital Identity & Privacy"]},
+        {name:"AI-Native Chip Design Challenge", loc:"Leipzig", date:"14-15 Dec", tags:["Artificial Intelligence (AI)","Developer Tools / DX","Open Source","Industry 4.0 / Smart Manufacturing","Robotics & Autonomous Systems"]},
+        {name:"AI Agents Hackathon 2027", loc:"Hamburg", date:"20-21 Jan", tags:["Artificial Intelligence (AI)","Supply Chain & Logistics","Industry 4.0 / Smart Manufacturing"]},
+        {name:"Light x Lovable x Personio Finance Hackathon", loc:"Munich", date:"8 Oct", tags:["Artificial Intelligence (AI)","FinTech"]},
+      ]},
+      {code:"ch", name:"Switzerland", events:[
+        {name:"Hack Night", loc:"St. Gallen", date:"29 Sep", tags:["Artificial Intelligence (AI)"]},
+        {name:"women get IT done: Te Toca x WINZ Hackathon", loc:"Zurich", date:"1-8 Oct", tags:[]},
+        {name:"Hack VS - The New Generation Reinvents Valais", loc:"Martigny", date:"3-4 Oct", tags:["Artificial Intelligence (AI)","Developer Tools / DX","Open Source","Sustainability","FinTech"]},
+        {name:"{Tech: Europe} Agentic AI Hack", loc:"Zurich", date:"10 Oct", tags:["Artificial Intelligence (AI)"]},
+        {name:"ERH Physical AI Hackathon", loc:"Schlieren", date:"16-18 Oct", tags:["Artificial Intelligence (AI)","Robotics & Autonomous Systems","Hardware & Embedded Systems"]},
+        {name:"Neural Wave", loc:"Lugano", date:"16-18 Oct", tags:["Artificial Intelligence (AI)","Developer Tools / DX"]},
+        {name:"HackTheGap Hackathon by WINZ and the Analytics Club at ETH", loc:"Zurich", date:"31 Oct - 1 Nov", tags:["Artificial Intelligence (AI)"]},
+      ]},
+    ]},
+  ],
+  extraFlags: {},
+};
