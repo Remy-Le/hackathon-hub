@@ -63,3 +63,16 @@
 
 • 𝗛𝗮𝗰𝗸𝘁𝗼𝗯𝗲𝗿𝗳𝗲𝘀𝘁 𝗛𝗮𝗰𝗸 𝗗𝗮𝘆 𝗕𝗮𝗿𝗰𝗲𝗹𝗼𝗻𝗮
   Barcelona · 24 Oct · Artificial Intelligence (AI) · Open Source
+
+All events + filter: link in the first comment 👇
+
+First comment (paste in Buffer, not part of the post):
+All new events: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27
+🇦🇹 Austria: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=AT
+🇩🇪 Germany: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=DE
+🇫🇷 France: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=FR
+🇬🇧 United Kingdom: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=GB
+🇩🇰 Denmark: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=DK
+🇫🇮 Finland: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=FI
+🇮🇹 Italy: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=IT
+🇪🇸 Spain: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=ES

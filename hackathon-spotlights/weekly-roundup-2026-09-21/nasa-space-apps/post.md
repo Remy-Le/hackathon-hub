@@ -210,3 +210,31 @@
 🇻🇦 𝗩𝗮𝘁𝗶𝗰𝗮𝗻 𝗖𝗶𝘁𝘆
 • 𝗡𝗔𝗦𝗔 𝗦𝗽𝗮𝗰𝗲 𝗔𝗽𝗽𝘀 𝗖𝗵𝗮𝗹𝗹𝗲𝗻𝗴𝗲 𝗩𝗮𝘁𝗶𝗰𝗮𝗻 𝗖𝗶𝘁𝘆 𝟮𝟬𝟮𝟲
   Vatican City · 14-15 Nov · SpaceTech / Aerospace · Open Source
+
+All events + filter: link in the first comment 👇
+
+First comment (paste in Buffer, not part of the post):
+All new events: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27
+🇦🇹 Austria: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=AT
+🇩🇪 Germany: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=DE
+🇨🇭 Switzerland: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=CH
+🇫🇷 France: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=FR
+🇮🇪 Ireland: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=IE
+🇬🇧 United Kingdom: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=GB
+🇪🇪 Estonia: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=EE
+🇫🇮 Finland: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=FI
+🇱🇹 Lithuania: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=LT
+🇨🇾 Cyprus: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=CY
+🇬🇷 Greece: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=GR
+🇮🇹 Italy: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=IT
+🇵🇹 Portugal: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=PT
+🇪🇸 Spain: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=ES
+🇧🇬 Bulgaria: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=BG
+🇭🇺 Hungary: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=HU
+🇲🇪 Montenegro: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=ME
+🇲🇰 North Macedonia: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=MK
+🇵🇱 Poland: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=PL
+🇷🇴 Romania: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=RO
+🇺🇦 Ukraine: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=UA
+🇹🇷 Türkiye: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=TR
+🇻🇦 Vatican City: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=VA

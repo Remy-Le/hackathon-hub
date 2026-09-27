@@ -158,3 +158,13 @@ Glasgow · 26-27 Nov · Open Source · Developer Tools / DX · Reproducible Rese
 Edinburgh · 5 Dec · Gaming & Game Development
 
 All events + filter: link in the first comment 👇
+
+First comment (paste in Buffer, not part of the post):
+All new events: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27
+Western Europe: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=FR%2CNL%2CBE%2CLU%2CIE%2CGB%2CUK
+🇧🇪 Belgium: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=BE
+🇫🇷 France: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=FR
+🇮🇪 Ireland: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=IE
+🇱🇺 Luxembourg: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=LU
+🇳🇱 Netherlands: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=NL
+🇬🇧 United Kingdom: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=GB

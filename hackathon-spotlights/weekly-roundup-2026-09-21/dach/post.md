@@ -82,3 +82,12 @@
 
 • 𝗛𝗮𝗰𝗸𝗧𝗵𝗲𝗚𝗮𝗽 𝗛𝗮𝗰𝗸𝗮𝘁𝗵𝗼𝗻 𝗯𝘆 𝗪𝗜𝗡𝗭 𝗮𝗻𝗱 𝘁𝗵𝗲 𝗔𝗻𝗮𝗹𝘆𝘁𝗶𝗰𝘀 𝗖𝗹𝘂𝗯 𝗮𝘁 𝗘𝗧𝗛
   Zurich · 31 Oct - 1 Nov · Artificial Intelligence (AI)
+
+All events + filter: link in the first comment 👇
+
+First comment (paste in Buffer, not part of the post):
+All new events: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27
+DACH: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=DE%2CAT%2CCH
+🇦🇹 Austria: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=AT
+🇩🇪 Germany: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=DE
+🇨🇭 Switzerland: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=CH

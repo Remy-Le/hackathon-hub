@@ -74,3 +74,16 @@
 
 • 𝗕𝗮𝗿𝗰𝗲𝗹𝗼𝗻𝗮 𝗛𝗮𝗰𝗸𝗮𝘁𝗵𝗼𝗻
   Barcelona · 12-14 Feb · 💰 €10,000 · Developer Tools / DX · Open Source
+
+All events + filter: link in the first comment 👇
+
+First comment (paste in Buffer, not part of the post):
+All new events: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27
+Southern Europe: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=ES%2CPT%2CIT%2CGR%2CHR%2CSI%2CMT%2CCY%2CVA%2CSM%2CMC%2CAD%2CLI
+🇭🇷 Croatia: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=HR
+🇨🇾 Cyprus: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=CY
+🇬🇷 Greece: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=GR
+🇮🇹 Italy: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=IT
+🇵🇹 Portugal: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=PT
+🇸🇮 Slovenia: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=SI
+🇪🇸 Spain: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=ES
