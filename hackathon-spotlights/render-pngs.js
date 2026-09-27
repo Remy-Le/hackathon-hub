@@ -1,30 +1,53 @@
 const path = require('path');
 const fs = require('fs');
-const { chromium } = require('playwright');
 
-(async () => {
-  const outDir = path.join(__dirname, 'weekly-roundup-new-pngs');
-  fs.mkdirSync(outDir, { recursive: true });
+function parseArgs(argv) {
+  const out = {};
+  for (const a of argv) {
+    const m = a.match(/^--([^=]+)=(.*)$/);
+    if (m) out[m[1]] = m[2];
+  }
+  return out;
+}
 
-  // The page ships zoomed to 0.42 for on-screen review. Force zoom to 1 in the
-  // source *before* the first paint by string-replacing the CSS, then load via
-  // setContent -- Chromium doesn't reliably repaint backgrounds on a *runtime*
-  // `zoom` change (via the `--z` var or an injected stylesheet), which leaves
-  // stale page-background pixels behind the card's right/bottom edges.
-  let html = fs.readFileSync(path.join(__dirname, 'weekly-roundup-new.html'), 'utf8');
+// The page ships zoomed to 0.42 for on-screen review. Force zoom to 1 in the
+// source *before* the first paint by string-replacing the CSS, then load via
+// setContent -- Chromium doesn't reliably repaint backgrounds on a *runtime*
+// `zoom` change (via the `--z` var or an injected stylesheet), which leaves
+// stale page-background pixels behind the card's right/bottom edges.
+function neutralizeZoomAndChrome(html) {
   const before = html;
-  html = html.replace('.scaler{zoom:var(--z,.42)}', '.scaler{}');
-  if (html === before) {
+  let out = html.replace('.scaler{zoom:var(--z,.42)}', '.scaler{}');
+  if (out === before) {
     throw new Error('could not neutralize .scaler zoom -- rule not found');
   }
   // Strip the on-screen review chrome so each 1350px card lays out at full size
   // with nothing clipping it. Without this the `.wrap` max-width + `.stage`
   // horizontal scroll box clip the right of every card in the screenshot.
-  html = html.replace('</style>', `
+  out = out.replace('</style>', `
     header.intro,.controls,section.variant h2,section.variant .desc{display:none!important}
     .wrap{max-width:none!important;margin:0!important;padding:0!important}
     .stage{overflow:visible!important;border:0!important;border-radius:0!important;padding:0!important;background:#000!important}
   </style>`);
+  return out;
+}
+
+module.exports = { parseArgs, neutralizeZoomAndChrome };
+
+if (require.main === module) {
+(async () => {
+  const { chromium } = require('playwright');
+  const args = parseArgs(process.argv.slice(2));
+  if (!args.html || !args.outdir) {
+    console.error('Usage: node render-pngs.js --html=<path> --outdir=<path>');
+    process.exit(1);
+  }
+  const htmlPath = path.resolve(args.html);
+  const outDir = path.resolve(args.outdir);
+  fs.mkdirSync(outDir, { recursive: true });
+
+  let html = fs.readFileSync(htmlPath, 'utf8');
+  html = neutralizeZoomAndChrome(html);
 
   const browser = await chromium.launch();
   const page = await browser.newPage({
@@ -42,25 +65,10 @@ const { chromium } = require('playwright');
     throw new Error(`expected 1350px cards, got ${rect.width}px -- zoom override failed`);
   }
 
-  const names = [
-    '00-cover',
-    '01-dach-1',
-    '02-dach-2',
-    '03-dach-3',
-    '04-dach-4',
-    '05-dach-5',
-    '06-western-europe-1',
-    '07-western-europe-2',
-    '08-western-europe-3',
-    '09-western-europe-4',
-    '10-northern-europe-1',
-    '11-southern-europe-1',
-    '12-central-eastern-europe-1',
-    '13-online-remote-1',
-  ];
+  const names = await page.evaluate(() => window.__slideNames);
 
   for (let i = 0; i < cards.length; i++) {
-    const name = names[i] || `slide-${String(i).padStart(2, '0')}`;
+    const name = (names && names[i]) || `slide-${String(i).padStart(2, '0')}`;
     const outPath = path.join(outDir, `${name}.png`);
     await cards[i].screenshot({ path: outPath });
     console.log('saved', outPath);
@@ -68,3 +76,4 @@ const { chromium } = require('playwright');
 
   await browser.close();
 })().catch(e => { console.error(e); process.exit(1); });
+}

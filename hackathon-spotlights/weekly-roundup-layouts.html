@@ -234,11 +234,10 @@ function slideRegionPage(r, regionNo, chunk, pageNo, pageCount){
         ${tags(e.tags,17)}
       </div>`).join("")}
     </div>`).join("");
-  const part = pageCount>1 ? ` · ${pageNo}/${pageCount}` : "";
   return `<div class="card" style="height:1350px;padding:88px 92px">${deco}<div class="inner">
-    ${brand(`EUROPE · ${WEEK}`)}
+    ${brand(`${WEEK}`)}
     <div style="margin-top:40px">
-      <div class="foot-mono" style="font-size:20px">REGION ${regionNo} / ${NREGIONS}${part}</div>
+      ${NREGIONS>1?`<div class="foot-mono" style="font-size:20px">REGION ${regionNo} / ${NREGIONS}</div>`:""}
       <div style="display:flex;align-items:baseline;gap:20px;margin-top:8px">
         <div style="font-size:76px;font-weight:900;letter-spacing:-.03em">${esc(r.name)}</div>
         <div style="font-size:30px;font-weight:800;color:#1e96f0">${n} new</div>
@@ -246,7 +245,10 @@ function slideRegionPage(r, regionNo, chunk, pageNo, pageCount){
       <div class="flags" style="margin-top:12px">${flagRow(r.codes,26)}</div>
     </div>
     <div class="rbody" style="flex:1;overflow:hidden"><div class="rbody-in">${body}</div></div>
-    <div class="foot-mono" style="font-size:15px;margin-top:24px">→ ALL EVENTS + FILTER · LINK IN COMMENTS</div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:24px">
+      <div class="foot-mono" style="font-size:15px">→ ALL EVENTS + FILTER · LINK IN COMMENTS</div>
+      ${pageCount>1?`<div class="foot-mono" style="font-size:15px">${pageNo}/${pageCount}</div>`:""}
+    </div>
   </div></div>`;
 }
 document.getElementById("slidesA").innerHTML =
