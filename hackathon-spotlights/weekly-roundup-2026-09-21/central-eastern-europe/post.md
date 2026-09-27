@@ -50,4 +50,15 @@ Sofia, Birkirkara · 27-30 Nov · 💰 €5,000 · Gaming & Game Development
 
 All events + filter: link in the first comment 👇
 
+First comment (paste in Buffer, not part of the post):
+All new events: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27
+Central & Eastern Europe: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=PL%2CCZ%2CSK%2CHU%2CRO%2CBG%2CRS%2CUA%2CAL%2CBA%2CMD%2CME%2CMK%2CXK%2CTR%2CGE%2CAM%2CAZ%2CBY
+🇧🇬 Bulgaria: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=BG
+🇨🇿 Czechia: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=CZ
+🇵🇱 Poland: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=PL
+🇷🇴 Romania: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=RO
+🇷🇸 Serbia: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=RS
+🇺🇦 Ukraine: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=UA
+BG, MT (Sofia/Birkirkara joint event): https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=BG%2C+MT
+
 #hackathon #innovation #startups #students

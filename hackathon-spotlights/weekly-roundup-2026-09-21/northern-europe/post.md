@@ -43,3 +43,15 @@
 
 • 𝗛𝗲𝗹𝘀𝗶𝗻𝗴𝗯𝗼𝗿𝗴 𝗧𝗲𝗰𝗵 𝗪𝗲𝗲𝗸: 𝗛𝗮𝗰𝗸𝗮𝘁𝗵𝗼𝗻
   Helsingborg · 20 Oct · Developer Tools / DX · Open Source
+
+All events + filter: link in the first comment 👇
+
+First comment (paste in Buffer, not part of the post):
+All new events: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27
+Northern Europe: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=SE%2CNO%2CDK%2CFI%2CIS%2CEE%2CLV%2CLT
+🇩🇰 Denmark: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=DK
+🇫🇮 Finland: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=FI
+🇱🇻 Latvia: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=LV
+🇱🇹 Lithuania: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=LT
+🇳🇴 Norway: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=NO
+🇸🇪 Sweden: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27&country=SE

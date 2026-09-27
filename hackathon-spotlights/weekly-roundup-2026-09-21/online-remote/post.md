@@ -1,6 +1,6 @@
-𝟲 𝗻𝗲𝘄 𝗵𝗮𝗰𝗸𝗮𝘁𝗵𝗼𝗻𝘀 𝗼𝗻𝗹𝗶𝗻𝗲 / 𝗿𝗲𝗺𝗼𝘁𝗲 · 𝗽𝘂𝗯𝗹𝗶𝘀𝗵𝗲𝗱 𝘀𝗶𝗻𝗰𝗲 𝟮𝟭 𝗦𝗲𝗽 𝟮𝟬𝟮𝟲, 𝟬𝟬:𝟬𝟬
+𝟲 𝗻𝗲𝘄 𝗼𝗻𝗹𝗶𝗻𝗲 𝗵𝗮𝗰𝗸𝗮𝘁𝗵𝗼𝗻𝘀 · 𝗽𝘂𝗯𝗹𝗶𝘀𝗵𝗲𝗱 𝘀𝗶𝗻𝗰𝗲 𝟮𝟭 𝗦𝗲𝗽 𝟮𝟬𝟮𝟲, 𝟬𝟬:𝟬𝟬
 
-🌐 𝗢𝗻𝗹𝗶𝗻𝗲 / 𝗥𝗲𝗺𝗼𝘁𝗲 (𝟲)
+🌐 𝗢𝗻𝗹𝗶𝗻𝗲 (𝟲)
 
 • 𝗛𝗮𝗰𝗸 𝗔𝗽𝗲𝗿𝘁𝘂𝘀 𝗢𝗻𝗹𝗶𝗻𝗲 𝗛𝗮𝗰𝗸𝗮𝘁𝗵𝗼𝗻
   Online · 1-16 Oct · 💰 €10,680 · 🖥️ Online · Artificial Intelligence (AI) · Developer Tools / DX · Open Source · Social Impact · GovTech / Public Sector
@@ -19,3 +19,8 @@
 
 • 𝗖𝗜𝗡𝗘𝗖𝗔 𝗢𝗽𝗲𝗻 𝗛𝗮𝗰𝗸𝗮𝘁𝗵𝗼𝗻
   Online · 2-17 Dec · 🖥️ Online · High Performance Computing (HPC) · Developer Tools / DX · Data Science & Analytics · Artificial Intelligence (AI)
+
+All events + filter: link in the first comment 👇
+
+First comment (paste in Buffer, not part of the post):
+All new events: https://hackathonhub.eu/events?addedSince=2026-09-21&addedUntil=2026-09-27
