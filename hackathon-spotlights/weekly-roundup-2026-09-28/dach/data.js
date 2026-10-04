@@ -1,0 +1,43 @@
+module.exports = {
+  week: "SINCE 28 SEP 2026",
+  regions: [
+    {name:"DACH", codes:["at","de","ch"], countries:[
+      {code:"at", name:"Austria", events:[
+        {name:"IBM Responsible AI Hackathon powered by WU & UNIVIE", loc:"Vienna", date:"24 Oct", tags:["Artificial Intelligence (AI)"]},
+        {name:"Hack the Pool 2026: Cross-Institutional Cultural Data Hackathon", loc:"Vienna", date:"27-28 Oct", tags:["Data Science & Analytics","Open Source","Artificial Intelligence (AI)","Digital Humanities","Social Impact"]},
+        {name:"ArtHack! 2026", loc:"Vienna", date:"6-8 Nov", tags:["Accessibility & Assistive Tech","Digital Humanities","Social Impact"]},
+        {name:"PRXMT Hackathon", loc:"Vienna", date:"13-15 Nov", tags:["Robotics & Autonomous Systems","FinTech","HealthTech / Digital Health"]},
+      ]},
+      {code:"de", name:"Germany", events:[
+        {name:"Chief of Staff AI Buildathon", loc:"Berlin", date:"15 Oct", tags:["Artificial Intelligence (AI)","Developer Tools / DX"]},
+        {name:"Climate Innovation Challenge", loc:"Munich", date:"22 Oct", tags:["Sustainability","Energy Systems","Artificial Intelligence (AI)","CleanTech"]},
+        {name:"Graphs Gone Wild - Mini Hack", loc:"Berlin", date:"23 Oct", tags:["Artificial Intelligence (AI)","Developer Tools / DX","Data Science & Analytics"]},
+        {name:"Industrial Agents Hackathon: MM x UVC x Anthropic", loc:"Munich", date:"24-25 Oct", price:"€6,000", tags:["Artificial Intelligence (AI)","Internet of Things (IoT)","Industry 4.0 / Smart Manufacturing","Developer Tools / DX"]},
+        {name:"Futury Build Days #3 AI Edition – Tech by Hessian.AI", loc:"Frankfurt", date:"26-27 Oct", tags:["Artificial Intelligence (AI)","Open Source","Social Impact"]},
+        {name:"Traffic Wars Coding Challenge x CHECK24 Hamburg", loc:"Hamburg", date:"27 Oct", price:"€100", tags:["Developer Tools / DX"]},
+        {name:"Brain 1 Hackathon – Build the Future of Cognitive Performance", loc:"Neu-Isenburg", date:"28-30 Oct", price:"€2,000", tags:["Developer Tools / DX","Gaming & Game Development","Artificial Intelligence (AI)"]},
+        {name:"TUM Blockchain Hackathon", loc:"Munich", date:"30-31 Oct", price:"€10,000", tags:["Blockchain","Web3"]},
+        {name:"Halloween Hackathon (supported by Lovable)", loc:"Berlin", date:"31 Oct", tags:["Artificial Intelligence (AI)"]},
+        {name:"68th Hackergarten Stuttgart", loc:"Stuttgart", date:"3 Nov", tags:["Open Source","Developer Tools / DX"]},
+        {name:"Hackathon 2026", loc:"Wiesbaden", date:"4-12 Nov", tags:["GovTech / Public Sector","Smart Cities","Social Impact"]},
+        {name:"European Defense Tech Hackathon — UNIBW Munich", loc:"Neubiberg", date:"6-8 Nov", tags:["Developer Tools / DX","Artificial Intelligence (AI)","Cybersecurity","Defense & Security Tech","Social Impact"]},
+        {name:"Futury Build Days #4 Banking & Finance | Tech by JUPITER AI Factory", loc:"Frankfurt", date:"11-12 Nov", tags:["Artificial Intelligence (AI)","FinTech"]},
+        {name:"Code & Create", loc:"Karlsruhe", date:"20-22 Nov", perks:["✈️ Travel","🏨 Stay"], tags:["Artificial Intelligence (AI)","Developer Tools / DX","Open Source"]},
+        {name:"DevFest Münster 2026 | Agentic AI Hackathon", loc:"Münster", date:"21 Nov", tags:["Artificial Intelligence (AI)","Developer Tools / DX","Open Source"]},
+        {name:"European Defense Tech Hackathon - Berlin", loc:"Berlin", date:"27-29 Nov", tags:["Defense & Security Tech","Artificial Intelligence (AI)","Cybersecurity"]},
+        {name:"Engineering Microbial Consortia Challenge", loc:"Leipzig", date:"4 Dec 2026-4 Feb 2030", price:"€4,300,000", tags:["Artificial Intelligence (AI)","Life Sciences & Biotechnology","Sustainability"]},
+        {name:"European Defense Tech Hackathon — Hannover", loc:"Hanover", date:"12-14 Mar", tags:["Artificial Intelligence (AI)","Internet of Things (IoT)","Robotics & Autonomous Systems","Cybersecurity","Developer Tools / DX"]},
+      ]},
+      {code:"ch", name:"Switzerland", events:[
+        {name:"Hack Night: The Loft 2.0", loc:"St. Gallen", date:"6 Oct", tags:["Developer Tools / DX","Open Source"]},
+        {name:"Impulse Hack #1", loc:"Zurich", date:"9 Oct", tags:["Artificial Intelligence (AI)"]},
+        {name:"The Hackathon", loc:"Ecublens", date:"10-11 Oct", price:"US$5,000", tags:["Blockchain"]},
+        {name:"Hack Night: Content Machine", loc:"St. Gallen", date:"13 Oct", tags:["Artificial Intelligence (AI)","Developer Tools / DX","Open Source"]},
+        {name:"Impulse Hack #2", loc:"Zurich", date:"16 Oct", tags:["Artificial Intelligence (AI)"]},
+        {name:"AIncient Hack 2026", loc:"Zurich", date:"23-24 Oct", tags:["Digital Humanities","Artificial Intelligence (AI)","Data Science & Analytics","Open Source"]},
+        {name:"Snakemake Hackathon March 2027", loc:"Villigen PSI", date:"8-12 Mar", tags:["Data Science & Analytics","Open Source","Developer Tools / DX","Bioinformatics","Reproducible Research"]},
+      ]},
+    ]},
+  ],
+  extraFlags: {},
+};
