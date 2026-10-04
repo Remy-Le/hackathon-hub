@@ -1,0 +1,52 @@
+module.exports = {
+  week: "SINCE 28 SEP 2026",
+  regions: [
+    {name:"Western Europe", codes:["be","fr","ie","nl","gb"], countries:[
+      {code:"be", name:"Belgium", events:[
+        {name:"Christmas Elves Hackathon", loc:"Brussels", date:"19 Dec", tags:["Developer Tools / DX"]},
+      ]},
+      {code:"fr", name:"France", events:[
+        {name:"ODISSEE GPU Hackathon", loc:"Bordeaux", date:"12-15 Oct", tags:["Developer Tools / DX","High Performance Computing (HPC)","Data Science & Analytics","Artificial Intelligence (AI)","Open Source"]},
+        {name:"Payflows × Anthropic Finance Hackathon (Paris)", loc:"Paris", date:"15 Oct", tags:["Artificial Intelligence (AI)","FinTech"]},
+        {name:"Build Agents That Remember Hackathon", loc:"Paris", date:"16-18 Oct", price:"US$3,000", tags:["Artificial Intelligence (AI)","Developer Tools / DX"]},
+        {name:"HACKATHON, BUILD WHAT'S NEXT.", loc:"Puteaux", date:"23-24 Oct", tags:["Artificial Intelligence (AI)","FinTech"]},
+        {name:"Hacktelier - HETIC - 3 Days from Idea to Project", loc:"Paris", date:"27-29 Oct", tags:["Artificial Intelligence (AI)"]},
+        {name:"European Defense Tech Hackathon – Paris", loc:"Paris", date:"20-22 Nov", tags:["Artificial Intelligence (AI)","Cybersecurity","Defense & Security Tech"]},
+        {name:"Buildathon Lovable Toulouse – AI Builders", loc:"Toulouse", date:"21 Nov", tags:["Artificial Intelligence (AI)"]},
+      ]},
+      {code:"ie", name:"Ireland", events:[
+        {name:"Dublin. Vibe Coding Club: Building Chrome Extensions", loc:"Dublin", date:"19 Oct", tags:["Developer Tools / DX","Artificial Intelligence (AI)","Open Source"]},
+        {name:"Peekthrough October Hackathon with ElevenLabs", loc:"Dublin", date:"22 Oct", tags:["Artificial Intelligence (AI)"]},
+        {name:"InnovationIreland x ElevenLabs Hackathon", loc:"Galway", date:"21 Nov", tags:["Social Impact","Open Source","Artificial Intelligence (AI)"]},
+      ]},
+      {code:"nl", name:"Netherlands", events:[
+        {name:"Agents Gone Rogue — AI Hackathon", loc:"Amsterdam", date:"6 Oct", price:"€500", tags:["Artificial Intelligence (AI)","Open Source"]},
+        {name:"Nowa x Supabase Hackathon: Building for Mobile", loc:"Amsterdam", date:"10 Oct", price:"€200", tags:["Developer Tools / DX","API & Platform Engineering","Mobility & Transportation"]},
+        {name:"Hack Night The Netherlands", loc:"Amsterdam", date:"19 Oct", tags:["Developer Tools / DX","Data Science & Analytics","Open Source"]},
+        {name:"AI & Mobility Hackathon 2026", loc:"Delft", date:"4 Nov", tags:["Artificial Intelligence (AI)","Mobility & Transportation","Smart Cities"]},
+        {name:"European Defense Tech Hackathon - Almere", loc:"Almere", date:"13-15 Nov", tags:["Defense & Security Tech","Open Source"]},
+      ]},
+      {code:"gb", name:"United Kingdom", events:[
+        {name:"Big Screen Hack London: (Remote & In Person)", loc:"London", date:"5-10 Oct", tags:["Artificial Intelligence (AI)","Gaming & Game Development"]},
+        {name:"Hackathon at Community over Code Glasgow 2026", loc:"Glasgow", date:"12-14 Oct", tags:["Open Source","Developer Tools / DX"]},
+        {name:"Accel AI Innovate London", loc:"London", date:"15 Oct", tags:["Artificial Intelligence (AI)","Developer Tools / DX","FinTech"]},
+        {name:"Pride in Place: Elswick South Youth Hack", loc:"Newcastle upon Tyne", date:"15 Oct", perks:["✈️ Travel"], tags:["Social Impact","Smart Cities"]},
+        {name:"Reinvent the Wheel: A Tools for Science Hack", loc:"London", date:"16-18 Oct", perks:["✈️ Travel","🏨 Stay"], tags:["Artificial Intelligence (AI)","Open Source"]},
+        {name:"DMLab Colchester - October: Hackathon Day", loc:"Colchester", date:"17 Oct", tags:["Social Impact","Accessibility & Assistive Tech","Gaming & Game Development","Internet of Things (IoT)"]},
+        {name:"Hardware Hackathon: Robotics to Improve Human Experience", loc:"London", date:"17 Oct", tags:["Robotics & Autonomous Systems","Hardware & Embedded Systems","Social Impact"]},
+        {name:"Databricks UK Innovation Hackathon with Colibri Digital", loc:"GB", date:"21 Oct", tags:["Data Science & Analytics","Artificial Intelligence (AI)","Developer Tools / DX"]},
+        {name:"AI in Healthcare Hackathon / Leeds AI Society", loc:"Leeds", date:"24-25 Oct", tags:["Artificial Intelligence (AI)","HealthTech / Digital Health","Social Impact"]},
+        {name:"ShePartners x Just Eat Takeaway Hackathon", loc:"London", date:"28 Oct", tags:["Social Impact","Accessibility & Assistive Tech","Sustainability","Developer Tools / DX"]},
+        {name:"AI for Good Hackathon", loc:"St. Sampson", date:"31 Oct", tags:["Artificial Intelligence (AI)","Social Impact","Developer Tools / DX"]},
+        {name:"House London #3 | Data Hackathon", loc:"London", date:"7 Nov", tags:["Data Science & Analytics","Smart Cities","Social Impact"]},
+        {name:"LegalTech in Leeds Hackathon 2026", loc:"Leeds", date:"13 Nov", price:"£500", tags:["LegalTech / Legal AI","Artificial Intelligence (AI)","Social Impact"]},
+        {name:"DurHack 2026", loc:"Durham", date:"14-15 Nov", perks:["✈️ Travel"], tags:["Developer Tools / DX","Open Source"]},
+        {name:"GTM Hackathon by Granola x Gemini", loc:"London", date:"17 Nov", tags:["Artificial Intelligence (AI)","MarTech / AdTech"]},
+        {name:"VentureHack", loc:"Nottingham", date:"18 Nov", tags:["Sustainability","Social Impact"]},
+        {name:"Ideation Hackathon", loc:"London", date:"21-22 Nov", tags:["Artificial Intelligence (AI)"]},
+        {name:"Host Planet & Boostly AI Buildathon", loc:"Leeds", date:"27 Nov", tags:["Artificial Intelligence (AI)","Developer Tools / DX"]},
+      ]},
+    ]},
+  ],
+  extraFlags: {},
+};
