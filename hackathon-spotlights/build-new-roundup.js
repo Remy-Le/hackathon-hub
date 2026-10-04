@@ -146,12 +146,14 @@ function buildRoundupHtml({ regions, week, theme = null, extraFlags = {}, layout
     : `<span style="color:#1e96f0">\${TOTAL}</span> new ${escNode(headlineWords(theme))}<br>in ${HEADLINE_LABEL_HTML} <span style="color:#1e96f0">this week</span>`;
   const SUBLINE_HTML = NON_COUNTRY
     ? `Swipe through the cards →`
-    : `Across \${NCOUNTRIES} countries in ${escNode(LABEL)}. Swipe through the cards →`;
+    : (REGIONS.flatMap(r => r.countries).length <= 4
+      ? `Across ${escNode(COUNTRY_LIST)}. Swipe for the full list →`
+      : `Across \${NCOUNTRIES} countries in ${escNode(LABEL)}. Swipe for the full list →`);
 
   const extraFlagsScript = buildExtraFlagsScript(extraFlags, baseDir);
   const { cardCss, logoLine, flagsLine } = extractLayoutParts(layoutsHtml);
 
-  const out = `<title>New Hackathons in ${DISPLAY_LABEL} — Weekly Roundup</title>
+  const out = `<title>New Hackathons in ${DISPLAY_LABEL}: Weekly Roundup</title>
 <meta name="description" content="Carousel graphic: new hackathons published in ${DISPLAY_LABEL} since ${SINCE_DATE}, in the Hackathon Spotlight visual language.">
 <style>
   :root{
@@ -198,7 +200,7 @@ function buildRoundupHtml({ regions, week, theme = null, extraFlags = {}, layout
 
 <div class="wrap">
   <header class="intro">
-    <h1>New hackathons in ${DISPLAY_LABEL} — weekly roundup</h1>
+    <h1>New hackathons in ${DISPLAY_LABEL}: weekly roundup</h1>
     <p>Cover + region slides in the Hackathon Spotlight visual language (Option A carousel), covering
     hackathons published since ${SINCE_DATE} across ${COUNTRY_LIST}.</p>
   </header>
