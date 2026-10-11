@@ -1,0 +1,82 @@
+const AI = "Artificial Intelligence (AI)", DS = "Data Science & Analytics", DX = "Developer Tools / DX", SI = "Social Impact", OS = "Open Source", SP = "SpaceTech / Aerospace", CY = "Cybersecurity", FT = "FinTech", HT = "HealthTech / Digital Health";
+const nasa = (city, loc, tags) => ({name:`NASA Space Apps Challenge ${city} 2026`, loc, date:"14-15 Nov", tags: tags || [SP, OS]});
+module.exports = {
+  week: "SINCE 21 SEP 2026",
+  regions: [
+    {name:"Central & Eastern Europe", codes:["bg","cz","hu","me","mk","pl","ro","rs","sk","tr","ua"], countries:[
+      {code:"bg", name:"Bulgaria", events:[
+        {name:"EIT Water Hackathon", loc:"Sofia", date:"23-25 Oct", tags:["Sustainability","ClimateTech",DS,AI,"Smart Cities"]},
+        {name:"Man Group AI Hackathon: Sofia 2026", loc:"Sofia", date:"24 Oct", tags:[AI,FT,DS]},
+        nasa("Burgas","Burgas"),
+        nasa("Sofia","Sofia"),
+        {name:"12th CASSINI Hackathon – EU Space for Peace and Resilience", loc:"Sofia", date:"27-28 Nov", price:"€9,000", tags:[AI,CY,DS,SI]},
+        {name:"AMUSNET HACKATHON // EDITION 02", loc:"Sofia, Birkirkara", date:"27-30 Nov", price:"€5,000", tags:["Gaming & Game Development"]},
+      ]},
+      {code:"cz", name:"Czechia", events:[
+        {name:"Rakathon - National Cancer Hackathon", loc:"Prague", date:"16-18 Oct", price:"CZK 175,000", tags:[AI,HT,DS,SI]},
+        {name:"$ hackathon_", loc:"Prague", date:"19-20 Oct", price:"€6,000", tags:[AI,FT]},
+        {name:"12th CASSINI Hackathon Prague", loc:"Prague", date:"27-29 Nov", price:"€6,000", tags:[AI,DS,CY,"Defense & Security Tech",SI]},
+        {name:"Hack jak Brno — National Healthcare Hackathon", loc:"Brno", date:"27-29 Nov", price:"CZK 25,000", tags:[HT,AI,DS,SI]},
+      ]},
+      {code:"hu", name:"Hungary", events:[
+        {name:"Everesteer Hedge Fund Hackathon", loc:"Budapest", date:"19 Oct", price:"US$1,000", tags:[AI,FT]},
+        {name:"Filmathon · AI Filmmaking Hackathon with a Cinema Premiere", loc:"Budapest", date:"5-6 Nov", tags:[AI,"Gaming & Game Development",OS]},
+        nasa("Budapest","Budapest"),
+        {name:"BizHack AI Marketing Hackathon Budapest", loc:"Budapest", date:"24-26 Nov", tags:[AI,"MarTech / AdTech",FT]},
+      ]},
+      {code:"me", name:"Montenegro", events:[ nasa("Podgorica","Podgorica") ]},
+      {code:"mk", name:"North Macedonia", events:[ nasa("Strumica","Strumica") ]},
+      {code:"pl", name:"Poland", events:[
+        {name:"Future Smart City Hackathon 2026", loc:"Łódź", date:"9 Oct - 6 Nov", tags:["Smart Cities","Sustainability","Energy Systems",HT,SI]},
+        {name:"Warsaw Open Data Hackathon 2026", loc:"Warsaw", date:"17-18 Oct", price:"PLN 18,000", tags:[DS,"Smart Cities",OS,"GovTech / Public Sector",SI]},
+        {name:"START Warsaw x Poland Tech Week Hackathon", loc:"Warsaw", date:"30-31 Oct", tags:[AI]},
+        {name:"Hackathon 2026 — GrowUp", loc:"Krakow", date:"Nov - Jan", tags:[SI,"EdTech / Education Technology",FT]},
+        nasa("Gliwice","Gliwice"),
+        nasa("Poznań","Poznań"),
+        nasa("Stalowa Wola","Stalowa Wola"),
+        {name:"NEXT26 Hackathon", loc:"Olkusz", date:"21-22 Dec", tags:[AI,DX,OS]},
+      ]},
+      {code:"ro", name:"Romania", events:[
+        {name:"Bucharest Startup Weekend", loc:"Bucharest", date:"9-11 Oct", tags:[FT,SI]},
+        {name:"Startup Weekend Iasi", loc:"Iași", date:"16-18 Oct", tags:[FT,DX,SI]},
+        {name:"WaterWise Hub Hackathon: Co-creating Solutions for Water Circularity in Bucharest", loc:"Bucharest", date:"23-31 Oct", tags:["Sustainability","Smart Cities",SI]},
+        {name:"BreaQ 2026 – Hackathon & Conference on Quantum Technologies", loc:"Bucharest", date:"24-25 Oct", tags:["Quantum Computing",AI,DX,CY,OS]},
+        {name:"Craiova Hackathon", loc:"Craiova", date:"30 Oct - 1 Nov", tags:[AI,"Smart Cities",HT,OS,"Sustainability"]},
+        {name:"Space Engineering Challenge 2026", loc:"Romanesti Cave, Timis County", date:"6-8 Nov", tags:["Robotics & Autonomous Systems","Internet of Things (IoT)",AI,OS,"Hardware & Embedded Systems"]},
+        {name:"SmartHack", loc:"Bucharest", date:"7-8 Nov", price:"€7,750", perks:["🏨 Stay"], tags:[DX,SI,"Web3"]},
+        {name:"Cybersecurity Grand Prix", loc:"Bucharest", date:"12 & 26 Nov", price:"RON 5,000", tags:[CY]},
+        {name:"Hack Ton: AI Agent Hackathon and Conference", loc:"Mamaia", date:"13-15 Nov", price:"€1,000", tags:[AI,DX,"Gaming & Game Development",FT]},
+        {name:"UiPath Future Forward Hackathon 2026", loc:"Bucharest", date:"13-14 Nov", price:"RON 1,000", tags:[AI,DX]},
+        {name:"EESTEC Olympics — 14th Edition", loc:"Bucharest", date:"14-15 Nov", price:"€1,500", tags:[DX,OS]},
+        nasa("Alba Iulia","Alba Iulia",[OS,DX,SI,DS]),
+        nasa("Bistrița","Bistrița"),
+        nasa("Cluj-Napoca","Cluj-Napoca",[OS,DS,AI,SI]),
+        nasa("Craiova","Craiova"),
+        {name:"Cybersecurity Grand Prix", loc:"Cluj-Napoca", date:"16 Nov", price:"€3,000", tags:[]},
+        {name:"12th CASSINI Hackathon", loc:"Bucharest", date:"27-29 Nov", price:"€4,000", tags:[SP,CY,SI,DS,"GovTech / Public Sector"]},
+      ]},
+      {code:"rs", name:"Serbia", events:[
+        {name:"DevFest 2026 Hackathon", loc:"Belgrade", date:"9-11 Oct", tags:[AI,DX]},
+        {name:"3ALET Hackathon", loc:"Novi Sad", date:"30-31 Oct", price:"US$1,000", tags:[AI,DX,OS]},
+        {name:"Garaža | Frontier Hackathon", loc:"Belgrade", date:"7-8 Nov", price:"US$10,000", tags:[FT,DX,SI,"Sustainability",AI]},
+      ]},
+      {code:"sk", name:"Slovakia", events:[
+        {name:"European Defense Tech Hackathon - Bratislava", loc:"Bratislava", date:"19-21 Mar", tags:[DX,AI,CY,"Internet of Things (IoT)"]},
+      ]},
+      {code:"tr", name:"Türkiye", events:[
+        {name:"Women Game Jam Turkey 2026", loc:"Istanbul & Ankara", date:"16-18 Oct", tags:["Gaming & Game Development",DX,"Women in Tech / Diversity"]},
+        {name:"Women Game Jam – Halloween Party", loc:"Sarıyer", date:"17 Oct", tags:["Gaming & Game Development","Women in Tech / Diversity"]},
+        {name:"Boğaziçi Game Jam", loc:"Istanbul", date:"23-25 Oct", tags:["Gaming & Game Development"]},
+        nasa("Çorlu","Çorlu"),
+        nasa("Kırklareli","Kırklareli"),
+      ]},
+      {code:"ua", name:"Ukraine", events:[
+        {name:"Hacktoberfest Hack Day Lviv", loc:"Lviv", date:"24 Oct", tags:[AI,OS,DX]},
+        nasa("Dnipro","Dnipro"),
+        nasa("Kyiv","Kyiv"),
+        {name:"12th CASSINI Hackathon", loc:"Ivano-Frankivsk, Kyiv", date:"27-29 Nov", tags:[AI,DS,CY,"Defense & Security Tech",OS]},
+      ]},
+    ]},
+  ],
+  extraFlags: { bg:"flags/bg.svg", me:"flags/me.svg", rs:"flags/rs.svg", ua:"flags/ua.svg" },
+};

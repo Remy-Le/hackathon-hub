@@ -1,4 +1,4 @@
-<title>New Hackathons in Online — Weekly Roundup</title>
+<title>New Hackathons in Online: Weekly Roundup</title>
 <meta name="description" content="Carousel graphic: new hackathons published in Online since 21 Sep, in the Hackathon Spotlight visual language.">
 <style>
   :root{
@@ -64,7 +64,7 @@
 
 <div class="wrap">
   <header class="intro">
-    <h1>New hackathons in Online — weekly roundup</h1>
+    <h1>New hackathons in Online: weekly roundup</h1>
     <p>Cover + region slides in the Hackathon Spotlight visual language (Option A carousel), covering
     hackathons published since 21 Sep across Online.</p>
   </header>
@@ -86,7 +86,7 @@
 </div>
 
 <script>
-const REGIONS = [{"name":"Online / Remote","codes":["online"],"countries":[{"code":"online","name":"Online","events":[{"name":"Hack Apertus Online Hackathon","loc":"Online","date":"1-16 Oct","price":"€10,680","perks":["🖥️ Online"],"tags":["Artificial Intelligence (AI)","Developer Tools / DX","Open Source","Social Impact","GovTech / Public Sector"]},{"name":"Small AI for Development Hackathon Challenge","loc":"Online","date":"3-4 Oct","perks":["🖥️ Online"],"tags":["Artificial Intelligence (AI)","Social Impact","Sustainability","Developer Tools / DX"]},{"name":"Open Agent Hackathon 2026","loc":"Online","date":"15-20 Oct","price":"US$20,000","perks":["🖥️ Online"],"tags":["Artificial Intelligence (AI)","Developer Tools / DX","Open Source"]},{"name":"SheBuilds on Lovable - Season 04","loc":"Online","date":"15-17 Oct","perks":["🖥️ Online"],"tags":["Artificial Intelligence (AI)","Developer Tools / DX"]},{"name":"Qhack 2026","loc":"Online","date":"16-23 Oct","price":"US$15,000","perks":["🖥️ Online"],"tags":["Quantum Computing","Developer Tools / DX","Open Source","Artificial Intelligence (AI)"]},{"name":"CINECA Open Hackathon","loc":"Online","date":"2-17 Dec","perks":["🖥️ Online"],"tags":["High Performance Computing (HPC)","Developer Tools / DX","Data Science & Analytics","Artificial Intelligence (AI)"]}]}]}];
+const REGIONS = [{"name":"Online / Remote","codes":["online"],"countries":[{"code":"online","name":"Online","events":[{"name":"Hack Apertus Online Hackathon","loc":"Online","date":"1-16 Oct","price":"€10,680","perks":["🖥️ Online"],"tags":["Artificial Intelligence (AI)","Developer Tools / DX","Open Source","Social Impact","GovTech / Public Sector"]},{"name":"Yamaha TRANSPOSE Innovation Challenge 2026","loc":"Online","date":"7-31 Oct","perks":["🖥️ Online"],"tags":["Gaming & Game Development","Accessibility & Assistive Tech","Hardware & Embedded Systems","HCI / UX Innovation"]},{"name":"Hafnia Hackathon 2026","loc":"Online","date":"8-30 Oct","price":"€10,000","perks":["🖥️ Online"],"tags":["Artificial Intelligence (AI)","API & Platform Engineering","Smart Cities"]},{"name":"Build Something Real","loc":"Online","date":"11-12 Oct","price":"US$20,000","perks":["🖥️ Online"],"tags":["Developer Tools / DX","Artificial Intelligence (AI)","Open Source"]},{"name":"Build Something Real","loc":"Online","date":"12-13 Oct","price":"US$20,000","perks":["🖥️ Online"],"tags":["Developer Tools / DX","API & Platform Engineering","Open Source"]},{"name":"Build Something Real","loc":"Online","date":"13-14 Oct","price":"US$20,000","perks":["🖥️ Online"],"tags":["Developer Tools / DX","Artificial Intelligence (AI)"]},{"name":"Build Something Real","loc":"Online","date":"14 Oct","price":"US$20,000","perks":["🖥️ Online"],"tags":["Developer Tools / DX","Artificial Intelligence (AI)","Open Source"]},{"name":"Financial Literacy Game Jam","loc":"Online","date":"15 Oct - 15 Nov","perks":["🖥️ Online"],"tags":["Gaming & Game Development","Social Impact","FinTech"]},{"name":"Open Agent Hackathon 2026","loc":"Online","date":"15-20 Oct","price":"US$20,000","perks":["🖥️ Online"],"tags":["Artificial Intelligence (AI)","Developer Tools / DX","Open Source"]},{"name":"SheBuilds on Lovable - Season 04","loc":"Online","date":"15-17 Oct","perks":["🖥️ Online"],"tags":["Artificial Intelligence (AI)","Developer Tools / DX"]},{"name":"2026 international Actuarial competition","loc":"Online","date":"16-30 Oct","perks":["🖥️ Online"],"tags":["Artificial Intelligence (AI)","Data Science & Analytics"]},{"name":"Qhack 2026","loc":"Online","date":"16-23 Oct","price":"US$15,000","perks":["🖥️ Online"],"tags":["Quantum Computing","Developer Tools / DX","Open Source","Artificial Intelligence (AI)"]},{"name":"More Than a Hack 2027","loc":"Online","date":"20 Oct - 16 Nov","perks":["🖥️ Online"],"tags":["Data Science & Analytics","Artificial Intelligence (AI)","SportsTech"]},{"name":"Databricks Hackathon","loc":"Online","date":"12 Nov","perks":["🖥️ Online"],"tags":["Data Science & Analytics","Artificial Intelligence (AI)","Developer Tools / DX"]},{"name":"PowerUp Drenthe Hackathon","loc":"Online","date":"12-13 Nov","price":"€3,250","perks":["🖥️ Online"],"tags":["Energy Systems","Sustainability","Smart Cities","Social Impact"]},{"name":"NASA Space Apps Challenge Ahlen 2026","loc":"Online","date":"14-15 Nov","perks":["🖥️ Online"],"tags":["SpaceTech / Aerospace","Open Source"]},{"name":"NASA Space Apps Challenge Eindhoven 2026","loc":"Online","date":"14-15 Nov","perks":["🖥️ Online"],"tags":["SpaceTech / Aerospace","Open Source"]},{"name":"i-DEMO European Tourism Gamification Hackathon 2026","loc":"Online","date":"27-29 Nov","perks":["🖥️ Online"],"tags":["Gaming & Game Development","Sustainability","Digital Twins","Social Impact"]},{"name":"CINECA Open Hackathon","loc":"Online","date":"2-17 Dec","perks":["🖥️ Online"],"tags":["High Performance Computing (HPC)","Developer Tools / DX","Data Science & Analytics","Artificial Intelligence (AI)"]}]}]}];
 const WEEK = "SINCE 21 SEP 2026";
 const LABEL = "Online / Remote";
 const NON_COUNTRY = true;
@@ -145,20 +145,22 @@ function slideCover(){
     <div class="foot-mono" style="font-size:16px;margin-top:40px">→ ALL EVENTS + FILTER · LINK IN COMMENTS</div>
   </div></div>`;
 }
-const MAX_EVENTS_PER_SLIDE = 4;
+const PAGE_BUDGET = 5, HEADER_COST = 0.5; // event = 1 unit; a country header costs HEADER_COST
 
 function regionPages(r){
   const pages = [];
-  let cur = [], count = 0, curCode = null;
+  let cur = [], used = 0, curCode = null;
   r.countries.forEach(c=>{
     c.events.forEach((e, ei)=>{
-      if(count >= MAX_EVENTS_PER_SLIDE){ pages.push(cur); cur = []; count = 0; curCode = null; }
+      const cost = 1 + (curCode !== c.code ? HEADER_COST : 0);
+      if(used > 0 && used + cost > PAGE_BUDGET){ pages.push(cur); cur = []; used = 0; curCode = null; }
       if(curCode !== c.code){
         cur.push({ code:c.code, name:c.name, cont: ei > 0, events:[] });
         curCode = c.code;
+        used += HEADER_COST;
       }
       cur[cur.length-1].events.push(e);
-      count++;
+      used += 1;
     });
   });
   if(cur.length) pages.push(cur);
