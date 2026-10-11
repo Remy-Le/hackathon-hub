@@ -129,7 +129,7 @@ function extractLayoutParts(src) {
   return { cardCss, logoLine, flagsLine };
 }
 
-function buildRoundupHtml({ regions, week, theme = null, extraFlags = {}, layoutsHtml, baseDir }) {
+function buildRoundupHtml({ regions, week, period = 'this week', theme = null, extraFlags = {}, layoutsHtml, baseDir }) {
   const REGIONS = regions;
   const WEEK = week;
   const LABEL = regionLabel(REGIONS);
@@ -142,13 +142,13 @@ function buildRoundupHtml({ regions, week, theme = null, extraFlags = {}, layout
   const HEADLINE_SIZE = headlineFontSize(NON_COUNTRY ? NON_COUNTRY_WORD : (theme || DISPLAY_LABEL));
   const HEADLINE_LABEL_HTML = headlineLabelHtml(LABEL);
   const HEADLINE_HTML = NON_COUNTRY
-    ? `<span style="color:#1e96f0">\${TOTAL}</span> new ${escNode(NON_COUNTRY_WORD)} hackathons<br><span style="color:#1e96f0">this week</span>`
-    : `<span style="color:#1e96f0">\${TOTAL}</span> new ${escNode(headlineWords(theme))}<br>in ${HEADLINE_LABEL_HTML} <span style="color:#1e96f0">this week</span>`;
+    ? `<span style="color:#1e96f0">\${TOTAL}</span> new ${escNode(NON_COUNTRY_WORD)} hackathons<br><span style="color:#1e96f0">${escNode(period)}</span>`
+    : `<span style="color:#1e96f0">\${TOTAL}</span> new ${escNode(headlineWords(theme))}<br>in ${HEADLINE_LABEL_HTML} <span style="color:#1e96f0">${escNode(period)}</span>`;
   const SUBLINE_HTML = NON_COUNTRY
     ? `Swipe through the cards →`
     : (REGIONS.flatMap(r => r.countries).length <= 4
-      ? `Across ${escNode(COUNTRY_LIST)}. Swipe for the full list →`
-      : `Across \${NCOUNTRIES} countries in ${escNode(LABEL)}. Swipe for the full list →`);
+      ? `Across ${escNode(COUNTRY_LIST)}.<br>Swipe for the full list →`
+      : `Across \${NCOUNTRIES} countries in ${escNode(LABEL)}.<br>Swipe for the full list →`);
 
   const extraFlagsScript = buildExtraFlagsScript(extraFlags, baseDir);
   const { cardCss, logoLine, flagsLine } = extractLayoutParts(layoutsHtml);
@@ -281,20 +281,22 @@ function slideCover(){
     <div class="foot-mono" style="font-size:16px;margin-top:40px">→ ALL EVENTS + FILTER · LINK IN COMMENTS</div>
   </div></div>\`;
 }
-const MAX_EVENTS_PER_SLIDE = 4;
+const PAGE_BUDGET = 5, HEADER_COST = 0.5; // event = 1 unit; a country header costs HEADER_COST
 
 function regionPages(r){
   const pages = [];
-  let cur = [], count = 0, curCode = null;
+  let cur = [], used = 0, curCode = null;
   r.countries.forEach(c=>{
     c.events.forEach((e, ei)=>{
-      if(count >= MAX_EVENTS_PER_SLIDE){ pages.push(cur); cur = []; count = 0; curCode = null; }
+      const cost = 1 + (curCode !== c.code ? HEADER_COST : 0);
+      if(used > 0 && used + cost > PAGE_BUDGET){ pages.push(cur); cur = []; used = 0; curCode = null; }
       if(curCode !== c.code){
         cur.push({ code:c.code, name:c.name, cont: ei > 0, events:[] });
         curCode = c.code;
+        used += HEADER_COST;
       }
       cur[cur.length-1].events.push(e);
-      count++;
+      used += 1;
     });
   });
   if(cur.length) pages.push(cur);
@@ -332,11 +334,17 @@ function slideRegionPage(r, regionNo, chunk, pageNo, pageCount){
     </div>
   </div></div>\`;
 }
+// Multi-region carousel: the footer counter runs across the whole carousel; single region: per region.
+const ALL_PAGES = REGIONS.map(regionPages);
+const TOTAL_PAGES = ALL_PAGES.reduce((m,p)=>m+p.length,0);
+let pageOffset = 0;
 document.getElementById("slidesA").innerHTML =
   \`<div class="scaler">\${slideCover()}</div>\` +
   REGIONS.map((r,i)=>{
-    const pages = regionPages(r);
-    return pages.map((chunk,pi)=>\`<div class="scaler">\${slideRegionPage(r,i+1,chunk,pi+1,pages.length)}</div>\`).join("");
+    const pages = ALL_PAGES[i];
+    const off = NREGIONS>1 ? pageOffset : 0, total = NREGIONS>1 ? TOTAL_PAGES : pages.length;
+    pageOffset += pages.length;
+    return pages.map((chunk,pi)=>\`<div class="scaler">\${slideRegionPage(r,i+1,chunk,off+pi+1,total)}</div>\`).join("");
   }).join("");
 
 function slugify(name){
@@ -418,6 +426,7 @@ if (require.main === module) {
   const out = buildRoundupHtml({
     regions: data.regions,
     week: data.week,
+    period: data.period || undefined,
     theme: data.theme || null,
     extraFlags: data.extraFlags || {},
     layoutsHtml,
