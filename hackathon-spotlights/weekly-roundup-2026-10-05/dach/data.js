@@ -1,0 +1,40 @@
+module.exports = {
+  week: "SINCE 5 OCT 2026",
+  regions: [
+    {name:"DACH", codes:["at","de","ch"], countries:[
+      {code:"at", name:"Austria", events:[
+        {name:"AIM Healthcare Hackathon", loc:"Vienna", date:"29-30 Oct", price:"€15,000", tags:["HealthTech / Digital Health","Artificial Intelligence (AI)","Data Science & Analytics","Social Impact","Life Sciences & Biotechnology"]},
+        {name:"Tyrol Hackathon 2026", loc:"Innsbruck", date:"5-6 Nov", tags:["Open Source","Social Impact","Developer Tools / DX"]},
+        {name:"Alpen-Adria-University Hackathon", loc:"Klagenfurt", date:"27-29 Nov", price:"€5,000", tags:["Artificial Intelligence (AI)","Edge Computing","Hardware & Embedded Systems"]},
+      ]},
+      {code:"de", name:"Germany", events:[
+        {name:"Climathon 2026 Potsdam", loc:"Potsdam", date:"15 Oct", tags:["Sustainability","CleanTech","Smart Cities","Artificial Intelligence (AI)","Social Impact"]},
+        {name:"DO-DATA-HACKATHON", loc:"Dortmund", date:"16-17 Oct", price:"€3,000", tags:["Data Science & Analytics","Smart Cities","Social Impact","Industry 4.0 / Smart Manufacturing"]},
+        {name:"Hack Night: Haystack Enterprise Platform", loc:"Berlin", date:"21 Oct", tags:["Artificial Intelligence (AI)"]},
+        {name:"OSI Hackathon – Berlin Site, co-organized by Dunia, FAIRmat and HZB", loc:"Berlin", date:"21-22 Oct", tags:["Artificial Intelligence (AI)","Data Science & Analytics","Open Source"]},
+        {name:"Jamie AI Agentic AI Hack", loc:"Berlin", date:"24 Oct", tags:["Artificial Intelligence (AI)"]},
+        {name:"Stripe x Supabase: AI Payments + Impact Hack", loc:"Berlin", date:"24 Oct", tags:["Artificial Intelligence (AI)","Developer Tools / DX"]},
+        {name:"WATT THE HACK : Energy & AI Hackathon", loc:"Munich", date:"24 Oct", tags:["Energy Systems","Artificial Intelligence (AI)","CleanTech","Sustainability"]},
+        {name:"AI Week Hack", loc:"Frankfurt", date:"30 Oct", tags:["Artificial Intelligence (AI)","Developer Tools / DX"]},
+        {name:"Cursor x Sandbox Hackathon | Stuttgart", loc:"Stuttgart", date:"7 Nov", tags:["Developer Tools / DX","Social Impact"]},
+        {name:"Heritage Hackathon 2026: Saving Buildings Together", loc:"Leipzig", date:"7 Nov", tags:["Digital Humanities","Construction & Architecture","PropTech","Sustainability","Smart Cities"]},
+        {name:"Enactus Aachen x Collective Incubator Ideathon", loc:"Aachen", date:"13-15 Nov", price:"€1,000", tags:["Social Impact","Sustainability"]},
+        {name:"Entropy AI Security Hackathon", loc:"Berlin", date:"14 Nov", price:"US$10,000", tags:["Artificial Intelligence (AI)","Cybersecurity"]},
+        {name:"GAME JAM", loc:"Karlsruhe", date:"14-15 Nov", tags:["Artificial Intelligence (AI)","Gaming & Game Development"]},
+        {name:"Green Bonn Hackathon 2026", loc:"Bonn", date:"16-21 Nov", price:"€3,000", tags:["Sustainability","Energy Systems","Smart Cities","Data Science & Analytics"]},
+        {name:"Berlin Robotics & AI Hackathon - Hacklab X BRISA", loc:"Berlin", date:"21-22 Nov", price:"€10,000", tags:["Artificial Intelligence (AI)","Robotics & Autonomous Systems"]},
+        {name:"Future Health Hackathon", loc:"Göppingen", date:"25-27 Nov", tags:["Artificial Intelligence (AI)","HealthTech / Digital Health","Social Impact","Data Science & Analytics"]},
+        {name:"Winter Hackathon (supported by Lovable)", loc:"Berlin", date:"12 Dec", tags:["Developer Tools / DX","Open Source"]},
+      ]},
+      {code:"ch", name:"Switzerland", events:[
+        {name:"Impulse Hack #3", loc:"Zurich", date:"30 Oct", tags:["Artificial Intelligence (AI)"]},
+        {name:"Breast Cancer Awareness Hackathon", loc:"Zurich", date:"31 Oct", tags:["HealthTech / Digital Health","Artificial Intelligence (AI)","Social Impact","Life Sciences & Biotechnology"]},
+        {name:"Invenio Hackathon 2026", loc:"Zurich", date:"11 Nov", tags:["Developer Tools / DX","Open Source"]},
+        {name:"Impulse Hack #4", loc:"Zurich", date:"13 Nov", tags:["Artificial Intelligence (AI)"]},
+        {name:"Impulse Hack #5", loc:"Zurich", date:"4 Dec", tags:["Artificial Intelligence (AI)"]},
+        {name:"Impulse Hack #6", loc:"Zurich", date:"18 Dec", tags:["Artificial Intelligence (AI)"]},
+      ]},
+    ]},
+  ],
+  extraFlags: {},
+};
