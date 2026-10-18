@@ -129,7 +129,7 @@ function extractLayoutParts(src) {
   return { cardCss, logoLine, flagsLine };
 }
 
-function buildRoundupHtml({ regions, week, period = 'this week', theme = null, extraFlags = {}, layoutsHtml, baseDir }) {
+function buildRoundupHtml({ regions, week, period = 'this week', theme = null, single = null, extraFlags = {}, layoutsHtml, baseDir }) {
   const REGIONS = regions;
   const WEEK = week;
   const LABEL = regionLabel(REGIONS);
@@ -140,6 +140,8 @@ function buildRoundupHtml({ regions, week, period = 'this week', theme = null, e
   const NON_COUNTRY_WORD = NON_COUNTRY ? REGIONS[0].countries[0].name : '';
   const DISPLAY_LABEL = NON_COUNTRY ? NON_COUNTRY_WORD : LABEL;
   const HEADLINE_SIZE = headlineFontSize(NON_COUNTRY ? NON_COUNTRY_WORD : (theme || DISPLAY_LABEL));
+  const PLACE = NON_COUNTRY ? NON_COUNTRY_WORD.toLowerCase() : `in ${DISPLAY_LABEL}`;
+  const TITLE_PLACE = NON_COUNTRY ? NON_COUNTRY_WORD : `in ${DISPLAY_LABEL}`;
   const HEADLINE_LABEL_HTML = headlineLabelHtml(LABEL);
   const HEADLINE_HTML = NON_COUNTRY
     ? `<span style="color:#1e96f0">\${TOTAL}</span> new ${escNode(NON_COUNTRY_WORD)} hackathons<br><span style="color:#1e96f0">${escNode(period)}</span>`
@@ -153,8 +155,8 @@ function buildRoundupHtml({ regions, week, period = 'this week', theme = null, e
   const extraFlagsScript = buildExtraFlagsScript(extraFlags, baseDir);
   const { cardCss, logoLine, flagsLine } = extractLayoutParts(layoutsHtml);
 
-  const out = `<title>New Hackathons in ${DISPLAY_LABEL}: Weekly Roundup</title>
-<meta name="description" content="Carousel graphic: new hackathons published in ${DISPLAY_LABEL} since ${SINCE_DATE}, in the Hackathon Spotlight visual language.">
+  const out = `<title>New Hackathons ${TITLE_PLACE}: Weekly Roundup</title>
+<meta name="description" content="Carousel graphic: new hackathons published ${PLACE} since ${SINCE_DATE}, in the Hackathon Spotlight visual language.">
 <style>
   :root{
     --page-bg:#f3f4f7; --page-panel:#ffffff; --ink:#1b1d21; --ink-soft:#565a63;
@@ -200,7 +202,7 @@ function buildRoundupHtml({ regions, week, period = 'this week', theme = null, e
 
 <div class="wrap">
   <header class="intro">
-    <h1>New hackathons in ${DISPLAY_LABEL}: weekly roundup</h1>
+    <h1>New hackathons ${NON_COUNTRY ? NON_COUNTRY_WORD : `in ${DISPLAY_LABEL}`}: weekly roundup</h1>
     <p>Cover + region slides in the Hackathon Spotlight visual language (Option A carousel), covering
     hackathons published since ${SINCE_DATE} across ${COUNTRY_LIST}.</p>
   </header>
@@ -365,6 +367,60 @@ function slugify(name){
   window.__slideNames = names;
 })();
 
+/* ---------- Single-slide mode (small regions: cover + events on one card) ---------- */
+const PERIOD = ${JSON.stringify(period)};
+function singleHeadline(size){
+  const s = TOTAL===1 ? "" : "s";
+  const l1 = '<span style="color:#1e96f0">'+TOTAL+'</span> new '+(NON_COUNTRY ? esc(NON_COUNTRY_WORD)+' ' : '')+'hackathon'+s;
+  const l2 = (NON_COUNTRY ? '' : 'in '+esc(LABEL)+' ')+'<span style="color:#1e96f0">'+esc(PERIOD)+'</span>';
+  return '<div style="font-size:'+size+'px;line-height:1.02;font-weight:900;letter-spacing:-.03em">'+l1+'<br>'+l2+'</div>';
+}
+function singleFoot(){
+  return '<div class="foot-mono" style="font-size:16px;margin-top:24px">→ ALL EVENTS + FILTER · LINK IN COMMENTS</div>';
+}
+function singleShell(r, headHtml, bodyHtml, pad){
+  return '<div class="card" style="height:1350px;padding:'+(pad||'88px 92px')+'">'+deco+'<div class="inner">'
+    + brand("NEW HACKATHONS · "+(NON_COUNTRY?NON_COUNTRY_WORD:LABEL).toUpperCase())
+    + headHtml
+    + '<div class="rbody" style="flex:1;overflow:hidden;display:flex;flex-direction:column;justify-content:center"><div class="rbody-in">'+bodyHtml+'</div></div>'
+    + singleFoot()+'</div></div>';
+}
+function singleFlat(r){ return r.countries.flatMap(c=>c.events.map(e=>Object.assign({code:c.code,cname:c.name},e))); }
+// A: headline on top, country-grouped list below (closest to the regular region page)
+function slideSingleA(r){
+  const head = '<div style="margin-top:44px"><div class="foot-mono" style="font-size:20px">PUBLISHED · '+esc(WEEK)+'</div><div style="margin-top:16px">'+singleHeadline(70)+'</div>'
+    + '</div>';
+  const body = r.countries.map(c=>'<div style="margin-top:30px">'
+    + (NON_COUNTRY?'':'<div style="display:flex;align-items:center;gap:14px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.14)">'+flag(c.code,34)+'<span style="font-size:30px;font-weight:800">'+esc(c.name)+'</span></div>')
+    + c.events.map(e=>'<div style="padding:26px 0;border-bottom:1px solid rgba(255,255,255,.07)"><div class="ev-name" style="font-size:40px;line-height:1.15">'+esc(e.name)+'</div><div class="ev-meta" style="font-size:26px;margin-top:10px">'+esc(e.loc)+' · <b>'+esc(e.date)+'</b></div>'+tags(e.tags,20,e.price,e.perks)+'</div>').join("")
+    + '</div>').join("");
+  return singleShell(r, head, body);
+}
+// B: giant count + rounded event cards
+function slideSingleB(r){
+  const s = TOTAL===1 ? "" : "s";
+  const head = '<div style="margin-top:36px;display:flex;align-items:center;gap:36px"><div style="font-size:300px;line-height:.82;font-weight:900;letter-spacing:-.05em;color:#1e96f0">'+TOTAL+'</div>'
+    + '<div><div class="foot-mono" style="font-size:20px">PUBLISHED · '+esc(WEEK)+'</div><div style="font-size:58px;line-height:1.05;font-weight:900;letter-spacing:-.03em;margin-top:12px">new '+(NON_COUNTRY?esc(NON_COUNTRY_WORD)+' ':'')+'hackathon'+s+'<br>'+(NON_COUNTRY?'':'in '+esc(LABEL)+'<br>')+'<span style="color:#1e96f0">'+esc(PERIOD)+'</span></div></div></div>';
+  const body = singleFlat(r).map(e=>'<div style="margin-top:20px;padding:26px 30px;border:1px solid rgba(255,255,255,.16);border-radius:20px;background:rgba(255,255,255,.035)">'
+    + '<div style="display:flex;align-items:center;gap:14px">'+(NON_COUNTRY?'':flag(e.code,26))+'<span class="ev-meta" style="font-size:24px">'+esc(e.loc)+' · <b>'+esc(e.date)+'</b></span></div>'
+    + '<div class="ev-name" style="font-size:38px;line-height:1.15;margin-top:12px">'+esc(e.name)+'</div>'+tags(e.tags,19,e.price,e.perks)+'</div>').join("");
+  return singleShell(r, head, body);
+}
+// C: compact headline + timeline (date column on the left)
+function slideSingleC(r){
+  const head = '<div style="margin-top:44px"><div class="foot-mono" style="font-size:20px">PUBLISHED · '+esc(WEEK)+'</div><div style="margin-top:16px">'+singleHeadline(66)+'</div></div>';
+  const body = '<div style="margin:34px 0 0 16px;border-left:3px solid rgba(30,150,240,.55)">'+singleFlat(r).map(e=>'<div style="display:flex;gap:34px;padding:30px 0 30px 34px;position:relative;border-bottom:1px solid rgba(255,255,255,.07)">'
+    + '<div style="position:absolute;left:-12px;top:44px;width:21px;height:21px;border-radius:50%;background:#1e96f0;box-shadow:0 0 0 6px rgba(30,150,240,.2)"></div>'
+    + '<div class="foot-mono" style="width:230px;flex:none;font-size:36px;font-weight:600;color:#c7cad0;letter-spacing:0;line-height:1.2">'+esc(e.date)+'</div>'
+    + '<div style="flex:1"><div class="ev-name" style="font-size:36px;line-height:1.15">'+esc(e.name)+'</div><div class="ev-meta" style="font-size:24px;margin-top:10px;display:flex;align-items:center;gap:12px">'+(NON_COUNTRY?'':flag(e.code,24))+esc(e.loc)+'</div>'+tags(e.tags,19,e.price,e.perks)+'</div></div>').join("")+'</div>';
+  return singleShell(r, head, body);
+}
+const SINGLE = ${JSON.stringify(single || null)};
+if(SINGLE){
+  document.getElementById("slidesA").innerHTML = '<div class="scaler">'+({a:slideSingleA,b:slideSingleB,c:slideSingleC})[SINGLE](REGIONS[0])+'</div>';
+  window.__slideNames = ['00-'+slugify(REGIONS[0].name)];
+}
+
 function fitRegionBodies(){
   document.querySelectorAll("#slidesA .card .rbody").forEach(box=>{
     const inner = box.querySelector(".rbody-in");
@@ -428,6 +484,7 @@ if (require.main === module) {
     week: data.week,
     period: data.period || undefined,
     theme: data.theme || null,
+    single: args.single || null,
     extraFlags: data.extraFlags || {},
     layoutsHtml,
     baseDir: __dirname,
