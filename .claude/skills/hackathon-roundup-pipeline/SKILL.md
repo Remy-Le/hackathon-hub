@@ -59,9 +59,19 @@ node build-new-roundup.js --data=weekly-roundup-<date>/<region-slug>/data.js --o
 
 Confirm it logs `done` and writes the HTML at `--out`.
 
+### Small regions: single-slide mode (format B)
+
+If the region has **4 events or fewer** (sum across all countries), don't ship the multi-page carousel. Build a single slide instead (giant count + one rounded card per event), with `--single=b`:
+
+```
+node build-new-roundup.js --data=weekly-roundup-<date>/<region-slug>/data.js --single=b --out=weekly-roundup-<date>/<region-slug>/carousel-single-b.html
+```
+
+Why: pagination uses a weighted budget (`PAGE_BUDGET = 5`, event = 1, country header = 0.5), so a 4-event region spread over 3 countries (5.5) already spills onto a second page. Variants `a` (headline + country-grouped list) and `c` (timeline) also exist via `--single=a|c`; build them only if the user asks. Publish `carousel-single-b.html` as the region's review artifact, and render PNGs from it later (`render-pngs.js --html=...carousel-single-b.html`; a single slide yields one PNG).
+
 ## Stage 2 - Review artifact
 
-Publish the generated HTML (from `--out` above) as a **new artifact** (one per region), favicon `🇪🇺`. Give the user the URL and tell them to move the share pin so viewers see the new version. Do not render PNGs at this stage; the user reviews the artifact first.
+Publish the generated HTML (from `--out` above; `carousel-single-b.html` for a region with 4 events or fewer) as a **new artifact** (one per region), favicon `🇪🇺`. Give the user the URL and tell them to move the share pin so viewers see the new version. Do not render PNGs at this stage; the user reviews the artifact first.
 
 ## Stage 3 - QA pass (carousel rendering only)
 
