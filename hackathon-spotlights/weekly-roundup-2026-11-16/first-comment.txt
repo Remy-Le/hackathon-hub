@@ -1,0 +1,6 @@
+All new events: https://hackathonhub.eu/events?addedSince=2026-11-16&addedUntil=2026-11-22
+DACH: https://hackathonhub.eu/events?addedSince=2026-11-16&addedUntil=2026-11-22&country=AT%2CDE%2CCH
+Western Europe: https://hackathonhub.eu/events?addedSince=2026-11-16&addedUntil=2026-11-22&country=BE%2CFR%2CIE%2CNL%2CGB
+Northern Europe: https://hackathonhub.eu/events?addedSince=2026-11-16&addedUntil=2026-11-22&country=DK%2CEE%2CSE
+Southern Europe: https://hackathonhub.eu/events?addedSince=2026-11-16&addedUntil=2026-11-22&country=GR%2CIT%2CPT%2CES
+Central & Eastern Europe: https://hackathonhub.eu/events?addedSince=2026-11-16&addedUntil=2026-11-22&country=CZ%2CMK%2CTR
