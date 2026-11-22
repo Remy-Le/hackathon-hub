@@ -135,7 +135,11 @@ function buildRoundupHtml({ regions, week, period = 'this week', theme = null, s
   const LABEL = regionLabel(REGIONS);
 
   const SINCE_DATE = sinceDateFromWeek(WEEK);
-  const COUNTRY_LIST = joinWithAnd(REGIONS.flatMap(r => r.countries.map(c => c.name)));
+  // "online" is a pseudo-country (the Online/Remote block): never count or list it as a country,
+  // unless it's the only thing in the data (online-only run), so the list is never empty.
+  const ALL_COUNTRIES = REGIONS.flatMap(r => r.countries);
+  const REAL_COUNTRIES = ALL_COUNTRIES.filter(c => c.code !== 'online');
+  const COUNTRY_LIST = joinWithAnd((REAL_COUNTRIES.length ? REAL_COUNTRIES : ALL_COUNTRIES).map(c => c.name));
   const NON_COUNTRY = isNonCountryRegion(REGIONS);
   const NON_COUNTRY_WORD = NON_COUNTRY ? REGIONS[0].countries[0].name : '';
   const DISPLAY_LABEL = NON_COUNTRY ? NON_COUNTRY_WORD : LABEL;
@@ -148,7 +152,7 @@ function buildRoundupHtml({ regions, week, period = 'this week', theme = null, s
     : `<span style="color:#1e96f0">\${TOTAL}</span> new ${escNode(headlineWords(theme))}<br>in ${HEADLINE_LABEL_HTML} <span style="color:#1e96f0">${escNode(period)}</span>`;
   const SUBLINE_HTML = NON_COUNTRY
     ? `Swipe through the cards →`
-    : (REGIONS.flatMap(r => r.countries).length <= 4
+    : (REAL_COUNTRIES.length <= 4
       ? `Across ${escNode(COUNTRY_LIST)}.<br>Swipe for the full list →`
       : `Across \${NCOUNTRIES} countries in ${escNode(LABEL)}.<br>Swipe for the full list →`);
 
@@ -231,7 +235,7 @@ const NON_COUNTRY = ${JSON.stringify(NON_COUNTRY)};
 const NON_COUNTRY_WORD = ${JSON.stringify(NON_COUNTRY_WORD)};
 const SHORT_TAGS = ${JSON.stringify(LONG_TO_SHORT_TAGS)};
 const TOTAL = REGIONS.reduce((n,r)=>n+r.countries.reduce((m,c)=>m+c.events.length,0),0);
-const NCOUNTRIES = REGIONS.reduce((n,r)=>n+r.countries.length,0);
+const NCOUNTRIES = REGIONS.reduce((n,r)=>n+r.countries.filter(c=>c.code!=='online').length,0);
 const NREGIONS = REGIONS.length;
 
 const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
